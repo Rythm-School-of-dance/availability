@@ -50,7 +50,6 @@
         .calendar-day.weekend { background: #fff6ed; }
         .calendar-day.empty { background: #f5f5f5; box-shadow: none; }
         .day-number { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; text-align: center; color: #333; }
-        .day-type { display: none; }
         .time-options { display: flex; flex-direction: column; gap: 6px; flex: 1; }
         .time-option input[type="checkbox"] { display: none; }
         .time-option label { font-size: 0.8rem; padding: 10px 6px; border-radius: 8px; text-align: center; background: #f3f3f3; cursor: pointer; transition: all 0.2s; font-weight: 600; border: 2px solid #e0e0e0; min-height: 40px; display: flex; align-items: center; justify-content: center; }
@@ -59,7 +58,7 @@
         .not-available-option label { background: #fafafa; border: 2px dashed #ccc; }
         .not-available-option input[type="checkbox"]:checked + label { background: #888; color: white; border-color: #888; }
         .submit-section { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); z-index: 100; }
-        .submit-btn { width: 100%; max-width: 480px; margin: 0 auto; display: block; padding: 14px; border-radius: 30px; border: none; background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3); }
+        .submit-btn { width: 100%; max-width: 480px; margin: 0 auto; display: block; padding: 14px; border-radius: 30px; border: none; background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
         .submit-btn:active { transform: scale(0.98); }
         .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .success-message, .error-message { display: none; padding: 12px; border-radius: 10px; text-align: center; margin-bottom: 15px; font-size: 0.9rem; }
@@ -68,7 +67,7 @@
         .success-message.show, .error-message.show { display: block; }
         @media (min-width: 768px) {
             body { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; }
-            .container { max-width: 900px; background: white; border-radius: 20px; margin-top: 0; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+            .container { max-width: 900px; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
             .header { border-radius: 20px 20px 0 0; padding: 30px; }
             .logo { width: 120px; }
             .content { padding: 30px; }
@@ -137,8 +136,11 @@
         </div>
     </div>
 
+    <!-- supabase-config.js MUST load first so DB is available -->
+    <script src="supabase-config.js"></script>
+
     <script>
-        const CATEGORY = "junior";
+        const CATEGORY = "senior";
         const CACHE_KEY = "rhythms_parent_availability_junior";
 
         function saveCache() {
@@ -254,7 +256,7 @@
             const submitBtn = document.getElementById('submitBtn');
             if (!parentName || !childName) { showMessage('error', 'Please fill in all required fields'); return; }
 
-            const availability = { parentName, childName, category: CATEGORY, selections: {} };
+            const availability = { parentName, childName, category: "junior", selections: {} };
             document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
                 const parts = checkbox.id.split('-');
                 const month = parts[0];
@@ -290,6 +292,5 @@
             document.addEventListener("change", saveCache);
         });
     </script>
-    <script src="supabase-config.js"></script>
 </body>
 </html>
