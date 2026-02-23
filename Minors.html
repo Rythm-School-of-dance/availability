@@ -299,19 +299,24 @@
 
         // --- SUBMIT FUNCTION ---
         async function submitAvailability() {
-            const pName = document.getElementById('parentName').value.trim();
-            const cName = document.getElementById('childName').value.trim();
+            const pInput = document.getElementById('parentName').value.trim();
+            const cInput = document.getElementById('childName').value.trim();
             const submitBtn = document.getElementById('submitBtn');
 
-            if (!pName || !cName) { 
+            if (!pInput || !cInput) { 
                 showMessage('error', 'Please fill in all required fields'); 
                 return; 
             }
 
-            // Maps to your working config names: parentName & childName
+            // WE SEND BOTH VERSIONS: This ensures it works with your specific DB setup
             const availability = { 
-                parentName: pName, 
-                childName: cName, 
+                // Version A (One word)
+                parentName: pInput, 
+                childName: cInput,
+                // Version B (Underscore)
+                parent_name: pInput, 
+                child_name: cInput,
+                
                 category: "minor", 
                 selections: {} 
             };
@@ -330,19 +335,20 @@
             submitBtn.textContent = 'Submitting...';
 
             try {
-                // Calls DB.add from your config file
+                // This uses the same "DB.add" that makes your Seniors/Juniors work
                 await DB.add(availability);
                 showMessage('success', '');
                 
-                // Reset form
+                // Reset everything
                 document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => cb.checked = false);
                 document.getElementById('parentName').value = '';
                 document.getElementById('childName').value = '';
-                clearCache();
+                if(typeof clearCache === 'function') clearCache();
 
             } catch (error) {
                 console.error('Submission Error:', error);
-                showMessage('error', 'Failed to submit. Please try again.');
+                // This will tell us exactly why it's failing
+                showMessage('error', 'Database Error: ' + (error.message || 'Check connection'));
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit Availability';
