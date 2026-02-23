@@ -136,6 +136,9 @@
         </div>
     </div>
 
+    <!-- supabase-config.js MUST load first so DB is available -->
+    <script src="supabase-config.js"></script>
+
     <script>
         const CATEGORY = "senior";
         const CACHE_KEY = "rhythms_parent_availability_senior";
@@ -289,6 +292,5 @@
             document.addEventListener("change", saveCache);
         });
     </script>
-    <script src="supabase-config.js"></script>
 </body>
 </html>
