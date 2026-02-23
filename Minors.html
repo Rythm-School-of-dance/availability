@@ -110,6 +110,29 @@
         .error-message { background: #f44336; color: white; }
         .success-message.show, .error-message.show { display: block; }
 
+        /* Thank You State Styles */
+        #thankYouState {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin: 20px 0;
+        }
+        .thank-you-icon { font-size: 60px; margin-bottom: 20px; }
+        .thank-you-title { color: #22c55e; font-size: 1.5rem; margin-bottom: 10px; }
+        .thank-you-text { color: #666; line-height: 1.6; margin-bottom: 25px; }
+        .reload-btn { 
+            background: #22c55e; 
+            color: white; 
+            padding: 12px 24px; 
+            border-radius: 25px; 
+            border: none; 
+            font-weight: 600; 
+            cursor: pointer;
+        }
+
         @media (min-width: 768px) {
             body { background: linear-gradient(135deg, #dcfce7 0%, #86efac 100%); padding: 20px; }
             .container { max-width: 900px; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
@@ -139,44 +162,56 @@
             <div class="success-message" id="successMessage">✓ Your availability has been saved successfully!</div>
             <div class="error-message" id="errorMessage">✗ <span id="errorText"></span></div>
 
-            <div class="parent-info">
-                <h2>Your Information</h2>
-                <div class="form-group">
-                    <label for="parentName">Parent Name *</label>
-                    <input type="text" id="parentName" placeholder="Enter your full name" required>
+            <div id="thankYouState">
+                <div class="thank-you-icon">🎉</div>
+                <h2 class="thank-you-title">Thank You!</h2>
+                <p class="thank-you-text">
+                    Availability for <strong><span id="displayChildName"></span></strong> has been submitted successfully.<br>
+                    We have received your schedule and will use it for our planning.
+                </p>
+                <button class="reload-btn" onclick="window.location.reload()">Submit Another Student</button>
+            </div>
+
+            <div id="formState">
+                <div class="parent-info">
+                    <h2>Your Information</h2>
+                    <div class="form-group">
+                        <label for="parentName">Parent Name *</label>
+                        <input type="text" id="parentName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="childName">Child's Name *</label>
+                        <input type="text" id="childName" placeholder="Enter child's name" required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="childName">Child's Name *</label>
-                    <input type="text" id="childName" placeholder="Enter child's name" required>
+
+                <div class="month-selector">
+                    <button class="month-btn active" onclick="showMonth('may', event)">May</button>
+                    <button class="month-btn" onclick="showMonth('june', event)">June</button>
+                    <button class="month-btn" onclick="showMonth('july', event)">July</button>
+                    <button class="month-btn" onclick="showMonth('august', event)">Aug</button>
                 </div>
-            </div>
 
-            <div class="month-selector">
-                <button class="month-btn active" onclick="showMonth('may', event)">May</button>
-                <button class="month-btn" onclick="showMonth('june', event)">June</button>
-                <button class="month-btn" onclick="showMonth('july', event)">July</button>
-                <button class="month-btn" onclick="showMonth('august', event)">Aug</button>
-            </div>
+                <div id="may" class="calendar-container active">
+                    <div class="calendar-header"><div class="month-year">May 2026</div></div>
+                    <div class="calendar-grid" id="may-calendar"></div>
+                </div>
+                <div id="june" class="calendar-container">
+                    <div class="calendar-header"><div class="month-year">June 2026</div></div>
+                    <div class="calendar-grid" id="june-calendar"></div>
+                </div>
+                <div id="july" class="calendar-container">
+                    <div class="calendar-header"><div class="month-year">July 2026</div></div>
+                    <div class="calendar-grid" id="july-calendar"></div>
+                </div>
+                <div id="august" class="calendar-container">
+                    <div class="calendar-header"><div class="month-year">August 2026</div></div>
+                    <div class="calendar-grid" id="august-calendar"></div>
+                </div>
 
-            <div id="may" class="calendar-container active">
-                <div class="calendar-header"><div class="month-year">May 2026</div></div>
-                <div class="calendar-grid" id="may-calendar"></div>
-            </div>
-            <div id="june" class="calendar-container">
-                <div class="calendar-header"><div class="month-year">June 2026</div></div>
-                <div class="calendar-grid" id="june-calendar"></div>
-            </div>
-            <div id="july" class="calendar-container">
-                <div class="calendar-header"><div class="month-year">July 2026</div></div>
-                <div class="calendar-grid" id="july-calendar"></div>
-            </div>
-            <div id="august" class="calendar-container">
-                <div class="calendar-header"><div class="month-year">August 2026</div></div>
-                <div class="calendar-grid" id="august-calendar"></div>
-            </div>
-
-            <div class="submit-section">
-                <button class="submit-btn" onclick="submitAvailability()" id="submitBtn">Submit Availability</button>
+                <div class="submit-section">
+                    <button class="submit-btn" onclick="submitAvailability()" id="submitBtn">Submit Availability</button>
+                </div>
             </div>
         </div>
     </div>
@@ -315,11 +350,14 @@
             submitBtn.textContent = 'Submitting...';
             try {
                 await DB.add(availability);
-                showMessage('success', '');
-                document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => cb.checked = false);
-                document.getElementById('parentName').value = '';
-                document.getElementById('childName').value = '';
+                
+                // Success Handling: Show Thank You Screen
+                document.getElementById('displayChildName').textContent = childName;
+                document.getElementById('formState').style.display = 'none';
+                document.getElementById('thankYouState').style.display = 'block';
+                
                 clearCache();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
                 console.error('Error:', error);
                 showMessage('error', 'Failed to submit. Please try again.');
