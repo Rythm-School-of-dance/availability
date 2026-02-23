@@ -299,61 +299,54 @@
 
         // --- SUBMIT FUNCTION ---
         async function submitAvailability() {
-            const pInput = document.getElementById('parentName').value.trim();
-            const cInput = document.getElementById('childName').value.trim();
-            const submitBtn = document.getElementById('submitBtn');
+    const pInput = document.getElementById('parentName').value.trim();
+    const cInput = document.getElementById('childName').value.trim();
+    const submitBtn = document.getElementById('submitBtn');
 
-            if (!pInput || !cInput) { 
-                showMessage('error', 'Please fill in all required fields'); 
-                return; 
-            }
+    if (!pInput || !cInput) { 
+        showMessage('error', 'Please fill in all required fields'); 
+        return; 
+    }
 
-            // WE SEND BOTH VERSIONS: This ensures it works with your specific DB setup
-            const availability = { 
-                // Version A (One word)
-                parentName: pInput, 
-                childName: cInput,
-                // Version B (Underscore)
-                parent_name: pInput, 
-                child_name: cInput,
-                
-                category: "minor", 
-                selections: {} 
-            };
+    // This object matches your table columns (parent_name, child_name, category)
+    const availabilityData = { 
+        parent_name: pInput, 
+        child_name: cInput, 
+        category: "minor", // This tells the database it belongs with the others
+        selections: {} 
+    };
 
-            document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
-                const parts = checkbox.id.split('-');
-                const month = parts[0];
-                const day = parts[1];
-                const label = checkbox.nextElementSibling.textContent.trim();
-                if (!availability.selections[month]) availability.selections[month] = {};
-                if (!availability.selections[month][day]) availability.selections[month][day] = [];
-                availability.selections[month][day].push(label);
-            });
+    // Collect calendar checks
+    document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+        const parts = checkbox.id.split('-');
+        const month = parts[0];
+        const day = parts[1];
+        const label = checkbox.nextElementSibling.textContent.trim();
+        if (!availabilityData.selections[month]) availabilityData.selections[month] = {};
+        if (!availabilityData.selections[month][day]) availabilityData.selections[month][day] = [];
+        availabilityData.selections[month][day].push(label);
+    });
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
 
-            try {
-                // This uses the same "DB.add" that makes your Seniors/Juniors work
-                await DB.add(availability);
-                showMessage('success', '');
-                
-                // Reset everything
-                document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => cb.checked = false);
-                document.getElementById('parentName').value = '';
-                document.getElementById('childName').value = '';
-                if(typeof clearCache === 'function') clearCache();
-
-            } catch (error) {
-                console.error('Submission Error:', error);
-                // This will tell us exactly why it's failing
-                showMessage('error', 'Database Error: ' + (error.message || 'Check connection'));
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Availability';
-            }
-        }
+    try {
+        // This uses the DB.add function that is already working for Seniors/Juniors
+        await DB.add(availabilityData);
+        showMessage('success', '');
+        
+        // Clear form
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => cb.checked = false);
+        document.getElementById('parentName').value = '';
+        document.getElementById('childName').value = '';
+    } catch (error) {
+        console.error('Error:', error);
+        showMessage('error', 'Database Error: ' + error.message);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Availability';
+    }
+}
 
         document.addEventListener("DOMContentLoaded", () => {
             Object.keys(months).forEach(monthKey => generateCalendar(monthKey));
