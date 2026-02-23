@@ -353,7 +353,8 @@
             try {
                 await DB.add(availability);
                 
-                // Show Thank You Screen
+            
+                 // Success Handling: Show Thank You Screen
                 document.getElementById('displayChildName').textContent = childName;
                 document.getElementById('formState').style.display = 'none';
                 document.getElementById('thankYouState').style.display = 'block';
