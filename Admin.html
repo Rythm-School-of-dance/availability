@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Rhythms School of Dance</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f8fc; }
+        .container { max-width: 100%; margin: 0 auto; }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; padding: 15px; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-content { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .logo { width: 50px; flex-shrink: 0; }
+        .logo img { width: 100%; object-fit: contain; }
+        .header-title h1 { font-size: 1.1rem; margin-bottom: 2px; }
+        .subtitle { font-size: 0.75rem; opacity: 0.9; }
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+        .btn { padding: 8px 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.8rem; white-space: nowrap; }
+        .btn-primary { background: white; color: #667eea; }
+        .btn-export { background: #4caf50; color: white; }
+
+        /* Category Toggle */
+        .category-toggle-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 30px;
+            padding: 4px;
+        }
+        .cat-btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.75rem;
+            background: transparent;
+            color: rgba(255,255,255,0.75);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .cat-btn.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .content { padding: 15px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+        .stat-card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
+        .stat-card.junior-accent::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(135deg, #ff6b6b, #ff8e53); }
+        .stat-card.senior-accent::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(135deg, #667eea, #764ba2); }
+        .stat-number { font-size: 1.8rem; font-weight: 700; color: #667eea; margin-bottom: 5px; }
+        .stat-label { font-size: 0.75rem; color: #666; font-weight: 600; }
+
+        /* Active filter indicator */
+        .filter-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #555;
+        }
+        .filter-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #667eea;
+            flex-shrink: 0;
+        }
+        .filter-dot.junior { background: linear-gradient(135deg, #ff6b6b, #ff8e53); }
+        .filter-dot.senior { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .filter-dot.both { background: linear-gradient(135deg, #ff6b6b, #764ba2); }
+
+        .month-selector { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; padding: 5px 0; }
+        .month-btn { flex: 0 0 auto; padding: 10px 16px; border-radius: 20px; border: none; background: white; font-size: 0.85rem; font-weight: 600; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .month-btn.active { background: #667eea; color: white; }
+        .calendar-container { display: none; }
+        .calendar-container.active { display: block; }
+        .calendar-header { background: white; padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .month-year { font-size: 1.2rem; font-weight: 700; color: #667eea; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 20px; }
+        .day-header { text-align: center; font-size: 0.7rem; color: white; background: #667eea; padding: 8px 2px; border-radius: 8px; font-weight: 600; }
+        .calendar-day { background: white; border-radius: 10px; padding: 8px 4px; min-height: 70px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.05); transition: all 0.2s; }
+        .calendar-day:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2); }
+        .calendar-day.weekend { background: #f8f9ff; }
+        .calendar-day.empty { background: #f5f5f5; cursor: default; box-shadow: none; }
+        .calendar-day.empty:hover { transform: none; box-shadow: none; }
+        .calendar-day.has-bookings { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
+        .day-number { font-weight: 700; font-size: 0.9rem; color: #333; margin-bottom: 4px; text-align: center; }
+        .day-type { font-size: 0.65rem; color: #666; margin-bottom: 4px; text-align: center; }
+        .booking-count { background: #667eea; color: white; padding: 3px 6px; border-radius: 10px; font-size: 0.65rem; font-weight: 600; display: inline-block; margin-top: 3px; }
+        .booking-count.junior { background: linear-gradient(135deg, #ff6b6b, #ff8e53); }
+        .booking-count.senior { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .booking-count.both { background: linear-gradient(90deg, #ff6b6b, #764ba2); }
+
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal.show { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 20px; max-width: 95%; width: 450px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .modal-header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px; border-radius: 20px 20px 0 0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-size: 1.1rem; font-weight: 600; }
+        .close-btn { background: rgba(255,255,255,0.2); border: none; color: white; font-size: 1.5rem; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .modal-body { padding: 15px; }
+        .booking-item { background: #f8f9fa; padding: 12px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid #667eea; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+        .booking-item.junior { border-left-color: #ff6b6b; }
+        .booking-item.senior { border-left-color: #667eea; }
+        .booking-content { flex: 1; }
+        .parent-name { font-weight: 700; font-size: 1rem; color: #333; margin-bottom: 4px; }
+        .child-name { color: #667eea; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; }
+        .category-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .category-tag.junior { background: #fff0ee; color: #ff6b6b; border: 1px solid #ffccc8; }
+        .category-tag.senior { background: #eef0ff; color: #667eea; border: 1px solid #c5cbf7; }
+        .time-slot { display: inline-block; background: #667eea; color: white; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; margin: 3px; }
+        .delete-booking-btn { background: #dc3545; color: white; border: none; padding: 8px; border-radius: 8px; font-size: 1.1rem; cursor: pointer; transition: background 0.3s; flex-shrink: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+        .delete-booking-btn:hover { background: #c82333; }
+        .no-bookings { text-align: center; padding: 30px; color: #999; }
+
+        @media (min-width: 768px) {
+            .container { max-width: 1200px; margin: 20px auto; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+            .header { border-radius: 20px 20px 0 0; padding: 20px; }
+            .logo { width: 70px; }
+            .header-title h1 { font-size: 1.5rem; }
+            .subtitle { font-size: 0.9rem; }
+            .btn { padding: 10px 18px; font-size: 0.9rem; }
+            .content { padding: 30px; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+            .stat-card { padding: 20px; }
+            .calendar-grid { gap: 10px; }
+            .calendar-day { min-height: 100px; padding: 12px; }
+            .day-number { font-size: 1.1rem; }
+            .cat-btn { font-size: 0.85rem; padding: 7px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">
+                        <img src="logo.png" alt="Rhythms School of Dance Logo">
+                    </div>
+                    <div class="header-title">
+                        <h1>Admin Dashboard</h1>
+                        <p class="subtitle">Calendar View</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <!-- Category Toggle -->
+                    <div class="category-toggle-bar">
+                        <button class="cat-btn" onclick="setFilter('junior')">🌟 Juniors</button>
+                        <button class="cat-btn active" onclick="setFilter('both')">Both</button>
+                        <button class="cat-btn" onclick="setFilter('senior')">⭐ Seniors</button>
+                    </div>
+                    <button class="btn btn-export" onclick="exportToCSV()">Export</button>
+                    <button class="btn btn-primary" onclick="refreshData()">↺</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalParents">0</div>
+                    <div class="stat-label">Families</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalBookings">0</div>
+                    <div class="stat-label">Total Bookings</div>
+                </div>
+                <div class="stat-card junior-accent">
+                    <div class="stat-number" id="juniorCount" style="color:#ff6b6b">0</div>
+                    <div class="stat-label">🌟 Juniors</div>
+                </div>
+                <div class="stat-card senior-accent">
+                    <div class="stat-number" id="seniorCount">0</div>
+                    <div class="stat-label">⭐ Seniors</div>
+                </div>
+            </div>
+
+            <div class="filter-indicator">
+                <div class="filter-dot both" id="filterDot"></div>
+                <span id="filterLabel">Showing: All Families</span>
+            </div>
+
+            <div class="month-selector">
+                <button class="month-btn active" onclick="showMonth('may', event)">May</button>
+                <button class="month-btn" onclick="showMonth('june', event)">June</button>
+                <button class="month-btn" onclick="showMonth('july', event)">July</button>
+                <button class="month-btn" onclick="showMonth('august', event)">August</button>
+            </div>
+
+            <div id="may" class="calendar-container active">
+                <div class="calendar-header"><div class="month-year">May 2026</div></div>
+                <div class="calendar-grid" id="may-calendar"></div>
+            </div>
+            <div id="june" class="calendar-container">
+                <div class="calendar-header"><div class="month-year">June 2026</div></div>
+                <div class="calendar-grid" id="june-calendar"></div>
+            </div>
+            <div id="july" class="calendar-container">
+                <div class="calendar-header"><div class="month-year">July 2026</div></div>
+                <div class="calendar-grid" id="july-calendar"></div>
+            </div>
+            <div id="august" class="calendar-container">
+                <div class="calendar-header"><div class="month-year">August 2026</div></div>
+                <div class="calendar-grid" id="august-calendar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Bookings</div>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="supabase-config.js"></script>
+    <script>
+        let allData = [];
+        let activeFilter = 'both'; // 'junior', 'senior', 'both'
+
+        const months = {
+            may: { name: 'May', year: 2026, days: 31, startDay: 4 },
+            june: { name: 'June', year: 2026, days: 30, startDay: 0 },
+            july: { name: 'July', year: 2026, days: 31, startDay: 3 },
+            august: { name: 'August', year: 2026, days: 31, startDay: 6 }
+        };
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        function setFilter(filter) {
+            activeFilter = filter;
+
+            // Update toggle buttons
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update indicator
+            const dot = document.getElementById('filterDot');
+            const label = document.getElementById('filterLabel');
+            dot.className = 'filter-dot ' + filter;
+            if (filter === 'both') label.textContent = 'Showing: All Families';
+            else if (filter === 'junior') label.textContent = 'Showing: Juniors Only 🌟';
+            else label.textContent = 'Showing: Seniors Only ⭐';
+
+            // Regenerate calendars with filter
+            Object.keys(months).forEach(monthKey => generateCalendar(monthKey));
+            updateStats();
+        }
+
+        function getFilteredData() {
+            if (activeFilter === 'both') return allData;
+            return allData.filter(p => (p.category || 'junior') === activeFilter);
+        }
+
+        async function loadAvailability() {
+            try {
+                const data = await DB.getAll();
+                allData = data;
+                return data;
+            } catch (error) {
+                console.error('Error:', error);
+                return [];
+            }
+        }
+
+        function generateCalendar(monthKey) {
+            const month = months[monthKey];
+            const grid = document.getElementById(`${monthKey}-calendar`);
+            grid.innerHTML = '';
+
+            dayNames.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+
+            for (let i = 0; i < month.startDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                grid.appendChild(emptyDay);
+            }
+
+            for (let day = 1; day <= month.days; day++) {
+                const dayOfWeek = (month.startDay + day - 1) % 7;
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+                const dayDiv = document.createElement('div');
+                dayDiv.className = `calendar-day ${isWeekend ? 'weekend' : ''}`;
+
+                const bookings = getBookingsForDay(monthKey, day);
+                if (bookings.length > 0) dayDiv.classList.add('has-bookings');
+
+                // Determine badge color class based on mix of categories
+                let badgeClass = '';
+                if (activeFilter === 'both' && bookings.length > 0) {
+                    const hasJ = bookings.some(b => b.category === 'junior');
+                    const hasS = bookings.some(b => b.category === 'senior');
+                    if (hasJ && hasS) badgeClass = 'both';
+                    else if (hasJ) badgeClass = 'junior';
+                    else badgeClass = 'senior';
+                } else {
+                    badgeClass = activeFilter === 'both' ? '' : activeFilter;
+                }
+
+                dayDiv.innerHTML = `
+                    <div class="day-number">${day}</div>
+                    <div class="day-type">${dayNames[dayOfWeek]}</div>
+                    ${bookings.length > 0 ? `<div class="booking-count ${badgeClass}">${bookings.length}</div>` : ''}
+                `;
+
+                if (bookings.length > 0) {
+                    dayDiv.onclick = () => showBookings(monthKey, day, bookings);
+                }
+
+                grid.appendChild(dayDiv);
+            }
+        }
+
+        function getBookingsForDay(month, day) {
+            const filtered = getFilteredData();
+            const bookings = [];
+            filtered.forEach(parent => {
+                if (parent.selections && parent.selections[month] && parent.selections[month][day]) {
+                    const slots = parent.selections[month][day];
+                    const validSlots = slots.filter(slot => slot !== "N/A");
+                    if (validSlots.length > 0) {
+                        bookings.push({
+                            parentName: parent.parent_name,
+                            childName: parent.child_name,
+                            timeSlots: validSlots,
+                            category: parent.category || 'junior',
+                            id: parent.id
+                        });
+                    }
+                }
+            });
+            return bookings;
+        }
+
+        function showBookings(month, day, bookings) {
+            const monthName = months[month].name;
+            document.getElementById('modalTitle').textContent = `${monthName} ${day}, 2026`;
+
+            if (bookings.length === 0) {
+                document.getElementById('modalBody').innerHTML = '<div class="no-bookings">No bookings for this day</div>';
+            } else {
+                let html = '';
+                bookings.forEach(booking => {
+                    const cat = booking.category || 'junior';
+                    const catLabel = cat === 'junior' ? '🌟 Junior' : '⭐ Senior';
+                    html += `
+                        <div class="booking-item ${cat}">
+                            <div class="booking-content">
+                                <span class="category-tag ${cat}">${catLabel}</span>
+                                <div class="parent-name">${booking.parentName}</div>
+                                <div class="child-name">Child: ${booking.childName}</div>
+                                <div>
+                                    ${booking.timeSlots.map(slot => `<span class="time-slot">${slot}</span>`).join('')}
+                                </div>
+                            </div>
+                            <button class="delete-booking-btn" onclick="deleteBooking(${booking.id}, '${monthName}', ${day})">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                });
+                document.getElementById('modalBody').innerHTML = html;
+            }
+            document.getElementById('bookingModal').classList.add('show');
+        }
+
+        function closeModal() { document.getElementById('bookingModal').classList.remove('show'); }
+
+        async function deleteBooking(id, monthName, day) {
+            if (!confirm(`Delete this booking for ${monthName} ${day}? This cannot be undone.`)) return;
+            try {
+                await DB.delete(id);
+                closeModal();
+                await refreshData();
+                alert('Booking deleted successfully!');
+            } catch (error) {
+                console.error('Error deleting booking:', error);
+                alert('Failed to delete booking. Please try again.');
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('bookingModal');
+            if (event.target === modal) closeModal();
+        };
+
+        function showMonth(month, e) {
+            document.querySelectorAll('.calendar-container').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(month).classList.add('active');
+            if (e && e.target) e.target.classList.add('active');
+        }
+
+        async function updateStats() {
+            const data = allData;
+            const juniors = data.filter(p => (p.category || 'junior') === 'junior');
+            const seniors = data.filter(p => p.category === 'senior');
+            const filtered = getFilteredData();
+
+            document.getElementById('totalParents').textContent = filtered.length;
+            document.getElementById('juniorCount').textContent = juniors.length;
+            document.getElementById('seniorCount').textContent = seniors.length;
+
+            let totalBookings = 0;
+            filtered.forEach(parent => {
+                Object.keys(parent.selections || {}).forEach(month => {
+                    Object.keys(parent.selections[month]).forEach(day => {
+                        totalBookings++;
+                    });
+                });
+            });
+            document.getElementById('totalBookings').textContent = totalBookings;
+        }
+
+        async function refreshData() {
+            await loadAvailability();
+            await updateStats();
+            Object.keys(months).forEach(monthKey => generateCalendar(monthKey));
+        }
+
+        async function exportToCSV() {
+            const data = getFilteredData();
+            let csv = 'Parent Name,Child Name,Category,Month,Day,Time Slot,Submitted Date\n';
+            data.forEach(parent => {
+                const submittedDate = new Date(parent.created_at).toLocaleDateString();
+                const cat = parent.category || 'junior';
+                Object.keys(parent.selections || {}).forEach(month => {
+                    Object.keys(parent.selections[month]).forEach(day => {
+                        parent.selections[month][day].forEach(slot => {
+                            csv += `"${parent.parent_name}","${parent.child_name}","${cat}","${month}","${day}","${slot}","${submittedDate}"\n`;
+                        });
+                    });
+                });
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `availability-${activeFilter}-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        window.addEventListener('load', async () => { await refreshData(); });
+    </script>
+</body>
+</html>
