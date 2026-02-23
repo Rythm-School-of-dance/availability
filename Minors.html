@@ -4,186 +4,181 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rhythms School of Dance - Minors Availability</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f8fc; }
-        
-        .container { 
-            max-width: 100%; 
-            margin: 0 auto; 
-            padding-bottom: 100px; 
-            overflow-x: hidden; 
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+        body { background-color: #f9fafb; color: var(--text-main); line-height: 1.5; padding-bottom: 2rem; }
+        
         .header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white; text-align: center; padding: 20px 15px;
-            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
-        }
-        .category-badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.25);
-            border: 2px solid rgba(255,255,255,0.6);
+            background: var(--bg-gradient);
             color: white;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            padding: 4px 14px;
-            border-radius: 20px;
-            margin-bottom: 10px;
+            padding: 3rem 1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        .logo { width: 90px; margin: 0 auto 10px; }
-        .logo img { width: 100%; object-fit: contain; }
-        h1 { font-size: 1.4rem; margin-bottom: 5px; }
-        .subtitle { font-size: 0.85rem; opacity: 0.9; }
-        
-        .content { padding: 8px; }
 
-        .parent-info { background: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .parent-info h2 { margin-bottom: 10px; font-size: 1rem; color: #667eea; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #666; font-weight: 500; }
-        .form-group input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 0.95rem; }
-        .form-group input:focus { outline: none; border-color: #667eea; }
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 1rem; }
+        .card { background: var(--card-bg); border-radius: 1rem; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; }
         
-        .month-selector { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; padding: 5px 0; }
-        .month-btn { flex: 0 0 auto; padding: 10px 16px; border-radius: 20px; border: none; background: white; font-size: 0.85rem; font-weight: 600; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.05); transition: all 0.2s; }
-        .month-btn.active { background: #667eea; color: white; }
-        
+        .form-section h3 { color: var(--primary); margin-bottom: 1.5rem; font-size: 1.25rem; }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-main); }
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .input-group input:focus { outline: none; border-color: var(--primary); ring: 2px solid #e0e7ff; }
+
+        .month-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 0.5rem; }
+        .month-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .month-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
         .calendar-container { display: none; }
         .calendar-container.active { display: block; }
-        .calendar-header { background: white; padding: 12px; border-radius: 12px; margin-bottom: 12px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-        .month-year { font-size: 1.1rem; font-weight: 700; color: #667eea; }
-
-        .calendar-grid { 
-            display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 4px; 
-            margin-bottom: 20px; 
-        }
-        .day-header { text-align: center; font-size: 0.7rem; color: #888; padding: 5px 0; font-weight: 600; }
+        .calendar-header { text-align: center; font-weight: bold; color: var(--primary); margin-bottom: 1rem; font-size: 1.25rem; }
         
-        .calendar-day { 
-            background: white; 
-            border-radius: 8px; 
-            padding: 8px 2px; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05); 
-            display: flex; 
-            flex-direction: column;
-            height: 100%;
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
         }
-        .calendar-day.weekend { background: #f0f4ff; }
-        .calendar-day.empty { background: #f5f5f5; box-shadow: none; }
-        .day-number { font-size: 1rem; font-weight: 700; margin-bottom: 8px; text-align: center; color: #333; }
-        
-        .time-options { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-        .time-option input[type="checkbox"] { display: none; }
 
-        .time-option label { 
-            font-size: 0.6rem; 
-            padding: 4px 1px; 
-            border-radius: 6px; 
-            text-align: center; 
-            background: #f3f3f3; 
-            cursor: pointer; 
-            transition: all 0.2s; 
-            font-weight: 600; 
-            border: 1.5px solid #e0e0e0; 
-            min-height: 28px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+        .day-header { text-align: center; font-weight: 600; font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem; text-transform: uppercase; }
+        .calendar-day { border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.5rem; min-height: 100px; background: #fff; }
+        .calendar-day.weekend { background-color: #f5f3ff; }
+        .calendar-day.empty { background: transparent; border: none; }
+        .day-number { font-weight: bold; margin-bottom: 0.5rem; font-size: 0.875rem; }
+
+        .time-options { display: flex; flex-direction: column; gap: 0.25rem; }
+        .time-option { display: flex; align-items: center; gap: 0.25rem; font-size: 0.7rem; padding: 0.25rem; border-radius: 0.25rem; cursor: pointer; border: 1px solid #f3f4f6; }
+        .time-option:has(input:checked) { background: #e0e7ff; border-color: var(--primary); }
+        .time-option input { cursor: pointer; }
+        .not-available-option { color: #999; border-style: dashed; }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--bg-gradient);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 9999px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1rem;
         }
-        .time-option input[type="checkbox"]:checked + label { background: #667eea; color: white; border-color: #667eea; }
-        .time-option input[type="checkbox"]:checked + label::after { content: ' ✓'; }
-        .not-available-option label { background: #fafafa; border: 1.5px dashed #ccc; }
-        .not-available-option input[type="checkbox"]:checked + label { background: #888; color: white; border-color: #888; }
+        .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .submit-section { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); z-index: 100; }
-        .submit-btn { width: 100%; max-width: 480px; margin: 0 auto; display: block; padding: 14px; border-radius: 30px; border: none; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
-        
-        .success-message, .error-message { display: none; padding: 12px; border-radius: 10px; text-align: center; margin-bottom: 15px; font-size: 0.9rem; }
-        .success-message { background: #4caf50; color: white; }
-        .error-message { background: #f44336; color: white; }
-        .success-message.show, .error-message.show { display: block; }
+        .message { padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; display: none; }
+        .message.show { display: block; }
+        .message.success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .message.error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
-        @media (min-width: 768px) {
-            body { background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); padding: 20px; }
-            .container { max-width: 900px; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-            .header { border-radius: 20px 20px 0 0; padding: 30px; }
-            .content { padding: 30px; }
-            .calendar-grid { gap: 10px; }
-            .calendar-day { min-height: 160px; padding: 14px 10px; }
-            .day-number { font-size: 1.2rem; }
-            .time-option label { font-size: 0.85rem; padding: 10px 8px; }
-            h1 { font-size: 1.8rem; }
+        @media (max-width: 768px) {
+            .calendar-grid { grid-template-columns: repeat(1, 1fr); }
+            .calendar-day { min-height: auto; }
+            .day-header { display: none; }
         }
     </style>
 </head>
 <body>
+    <header class="header">
+        <div class="badge">✨ Minors</div>
+        <h1>Rhythms School of Dance</h1>
+        <p>Parent Availability Calendar — Minors</p>
+    </header>
+
     <div class="container">
-        <div class="header">
-            <div class="logo">
-                <img src="logo.png" alt="Rhythms School of Dance Logo">
-            </div>
-            <div class="category-badge">✨ Minors</div>
-            <h1>Rhythms School of Dance</h1>
-            <p class="subtitle">Parent Availability Calendar — Minors</p>
+        <div id="successMessage" class="message success">
+            ✅ Availability submitted successfully!
+        </div>
+        <div id="errorMessage" class="message error">
+            ❌ <span id="errorText">Failed to submit. Please try again.</span>
         </div>
 
-        <div class="content">
-            <div class="success-message" id="successMessage">✓ Your availability has been saved successfully!</div>
-            <div class="error-message" id="errorMessage">✗ <span id="errorText"></span></div>
-
-            <div class="parent-info">
-                <h2>Your Information</h2>
-                <div class="form-group">
-                    <label for="parentName">Parent Name *</label>
-                    <input type="text" id="parentName" placeholder="Enter your full name" required>
-                </div>
-                <div class="form-group">
-                    <label for="childName">Child's Name *</label>
-                    <input type="text" id="childName" placeholder="Enter child's name" required>
-                </div>
+        <div class="card form-section">
+            <h3>Your Information</h3>
+            <div class="input-group">
+                <label for="parentName">Parent Name *</label>
+                <input type="text" id="parentName" placeholder="Enter your full name">
             </div>
-
-            <div class="month-selector">
-                <button class="month-btn active" onclick="showMonth('may', event)">May</button>
-                <button class="month-btn" onclick="showMonth('june', event)">June</button>
-                <button class="month-btn" onclick="showMonth('july', event)">July</button>
-                <button class="month-btn" onclick="showMonth('august', event)">Aug</button>
-            </div>
-
-            <div id="may" class="calendar-container active">
-                <div class="calendar-header"><div class="month-year">May 2026</div></div>
-                <div class="calendar-grid" id="may-calendar"></div>
-            </div>
-            <div id="june" class="calendar-container">
-                <div class="calendar-header"><div class="month-year">June 2026</div></div>
-                <div class="calendar-grid" id="june-calendar"></div>
-            </div>
-            <div id="july" class="calendar-container">
-                <div class="calendar-header"><div class="month-year">July 2026</div></div>
-                <div class="calendar-grid" id="july-calendar"></div>
-            </div>
-            <div id="august" class="calendar-container">
-                <div class="calendar-header"><div class="month-year">August 2026</div></div>
-                <div class="calendar-grid" id="august-calendar"></div>
-            </div>
-
-            <div class="submit-section">
-                <button class="submit-btn" onclick="submitAvailability()" id="submitBtn">Submit Availability</button>
+            <div class="input-group">
+                <label for="childName">Child's Name *</label>
+                <input type="text" id="childName" placeholder="Enter child's name">
             </div>
         </div>
+
+        <div class="month-tabs">
+            <button class="month-btn" onclick="showMonth('may', event)">May</button>
+            <button class="month-btn" onclick="showMonth('june', event)">June</button>
+            <button class="month-btn active" onclick="showMonth('july', event)">July</button>
+            <button class="month-btn" onclick="showMonth('august', event)">August</button>
+        </div>
+
+        <div id="may" class="calendar-container">
+            <div class="calendar-header">May 2026</div>
+            <div id="may-calendar" class="calendar-grid"></div>
+        </div>
+        <div id="june" class="calendar-container">
+            <div class="calendar-header">June 2026</div>
+            <div id="june-calendar" class="calendar-grid"></div>
+        </div>
+        <div id="july" class="calendar-container active">
+            <div class="calendar-header">July 2026</div>
+            <div id="july-calendar" class="calendar-grid"></div>
+        </div>
+        <div id="august" class="calendar-container">
+            <div class="calendar-header">August 2026</div>
+            <div id="august-calendar" class="calendar-grid"></div>
+        </div>
+
+        <button id="submitBtn" class="submit-btn" onclick="submitAvailability()">Submit Availability</button>
     </div>
 
-    <script src="supabase-config.js"></script>
+    <script src="../supabase-config.js"></script>
 
     <script>
         const CATEGORY = "minor";
         const CACHE_KEY = "rhythms_parent_availability_minor";
 
+        // PROGRESS SAVING
         function saveCache() {
             const parentName = document.getElementById("parentName").value;
             const childName = document.getElementById("childName").value;
@@ -197,12 +192,13 @@
                 const saved = localStorage.getItem(CACHE_KEY);
                 if (!saved) return;
                 const data = JSON.parse(saved);
-                const parentInput = document.getElementById("parentName");
-                const childInput = document.getElementById("childName");
-                if (parentInput) parentInput.value = data.parentName || "";
-                if (childInput) childInput.value = data.childName || "";
+                if (document.getElementById("parentName")) document.getElementById("parentName").value = data.parentName || "";
+                if (document.getElementById("childName")) document.getElementById("childName").value = data.childName || "";
                 if (Array.isArray(data.checked)) {
-                    data.checked.forEach(id => { const cb = document.getElementById(id); if (cb) cb.checked = true; });
+                    data.checked.forEach(id => {
+                        const cb = document.getElementById(id);
+                        if (cb) cb.checked = true;
+                    });
                 }
             } catch (e) { console.error('Error loading cache:', e); }
         }
@@ -215,38 +211,48 @@
             july: { name: 'July', year: 2026, days: 31, startDay: 3 },
             august: { name: 'August', year: 2026, days: 31, startDay: 6 }
         };
+
         const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
         function generateCalendar(monthKey) {
             const month = months[monthKey];
             const grid = document.getElementById(`${monthKey}-calendar`);
+            if(!grid) return;
             grid.innerHTML = '';
+            
             dayNames.forEach(day => {
                 const header = document.createElement('div');
                 header.className = 'day-header';
                 header.textContent = day;
                 grid.appendChild(header);
             });
+
             for (let i = 0; i < month.startDay; i++) {
                 const emptyDay = document.createElement('div');
                 emptyDay.className = 'calendar-day empty';
                 grid.appendChild(emptyDay);
             }
+
             for (let day = 1; day <= month.days; day++) {
                 const dayOfWeek = (month.startDay + day - 1) % 7;
                 const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
                 const dayDiv = document.createElement('div');
                 dayDiv.className = `calendar-day ${isWeekend ? 'weekend' : ''}`;
+                
                 const dayNumber = document.createElement('div');
                 dayNumber.className = 'day-number';
                 dayNumber.textContent = day;
+                
                 const timeOptions = document.createElement('div');
                 timeOptions.className = 'time-options';
+                
                 if (isWeekend) {
-                    ['10AM-12PM', '12PM-4PM', '4PM-6PM'].forEach(slot => timeOptions.appendChild(createTimeOption(`${monthKey}-${day}-${slot}`, slot)));
+                    ['10AM-12PM', '12PM-4PM', '4PM-6PM'].forEach(slot => 
+                        timeOptions.appendChild(createTimeOption(`${monthKey}-${day}-${slot}`, slot)));
                 } else {
                     timeOptions.appendChild(createTimeOption(`${monthKey}-${day}-6-8`, '6-8 PM'));
                 }
+                
                 timeOptions.appendChild(createTimeOption(`${monthKey}-${day}-na`, 'N/A', true));
                 dayDiv.appendChild(dayNumber);
                 dayDiv.appendChild(timeOptions);
@@ -291,19 +297,25 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // --- SUBMIT FUNCTION ---
         async function submitAvailability() {
-            const parentName = document.getElementById('parentName').value.trim();
-            const childName = document.getElementById('childName').value.trim();
+            const pName = document.getElementById('parentName').value.trim();
+            const cName = document.getElementById('childName').value.trim();
             const submitBtn = document.getElementById('submitBtn');
-            if (!parentName || !childName) { showMessage('error', 'Please fill in all required fields'); return; }
 
+            if (!pName || !cName) { 
+                showMessage('error', 'Please fill in all required fields'); 
+                return; 
+            }
+
+            // Maps to your working config names: parentName & childName
             const availability = { 
-                parent_name: parentName, 
-                child_name: childName, 
+                parentName: pName, 
+                childName: cName, 
                 category: "minor", 
                 selections: {} 
             };
-            
+
             document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
                 const parts = checkbox.id.split('-');
                 const month = parts[0];
@@ -316,17 +328,21 @@
 
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
+
             try {
-                // Using the specific variable name expected by your config (DB.add)
+                // Calls DB.add from your config file
                 await DB.add(availability);
                 showMessage('success', '');
+                
+                // Reset form
                 document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => cb.checked = false);
                 document.getElementById('parentName').value = '';
                 document.getElementById('childName').value = '';
                 clearCache();
+
             } catch (error) {
-                console.error('Error:', error);
-                showMessage('error', 'Failed to submit. Please check if the "category" column exists in your database.');
+                console.error('Submission Error:', error);
+                showMessage('error', 'Failed to submit. Please try again.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit Availability';
