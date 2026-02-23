@@ -7,7 +7,14 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f8fc; }
-        .container { max-width: 100%; margin: 0 auto; padding-bottom: 100px; }
+        
+        .container { 
+            max-width: 100%; 
+            margin: 0 auto; 
+            padding-bottom: 100px; 
+            overflow-x: hidden; 
+        }
+
         .header {
             background: linear-gradient(135deg, #ff6b6b, #ff8e53);
             color: white; text-align: center; padding: 20px 15px;
@@ -30,267 +37,31 @@
         .logo img { width: 100%; object-fit: contain; }
         h1 { font-size: 1.4rem; margin-bottom: 5px; }
         .subtitle { font-size: 0.85rem; opacity: 0.9; }
-        .content { padding: 12px; }
+        
+        /* Mobile Spacing Fix */
+        .content { padding: 8px; }
+
         .parent-info { background: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .parent-info h2 { margin-bottom: 10px; font-size: 1rem; color: #ff6b6b; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #666; font-weight: 500; }
         .form-group input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 0.95rem; }
         .form-group input:focus { outline: none; border-color: #ff6b6b; }
+        
         .month-selector { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; padding: 5px 0; }
         .month-btn { flex: 0 0 auto; padding: 10px 16px; border-radius: 20px; border: none; background: white; font-size: 0.85rem; font-weight: 600; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.05); transition: all 0.2s; }
         .month-btn.active { background: #ff6b6b; color: white; }
+        
         .calendar-container { display: none; }
         .calendar-container.active { display: block; }
         .calendar-header { background: white; padding: 12px; border-radius: 12px; margin-bottom: 12px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
         .month-year { font-size: 1.1rem; font-weight: 700; color: #ff6b6b; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 20px; }
-        .day-header { text-align: center; font-size: 0.8rem; color: #888; padding: 10px 0; font-weight: 600; }
-        .calendar-day { background: white; border-radius: 12px; padding: 12px 8px; min-height: 180px; aspect-ratio: 0.85; box-shadow: 0 2px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
-        .calendar-day.weekend { background: #fff6ed; }
-        .calendar-day.empty { background: #f5f5f5; box-shadow: none; }
-        .day-number { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; text-align: center; color: #333; }
-        .time-options { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-        .time-option input[type="checkbox"] { display: none; }
-        .time-option label { font-size: 0.8rem; padding: 10px 6px; border-radius: 8px; text-align: center; background: #f3f3f3; cursor: pointer; transition: all 0.2s; font-weight: 600; border: 2px solid #e0e0e0; min-height: 40px; display: flex; align-items: center; justify-content: center; }
-        .time-option input[type="checkbox"]:checked + label { background: #ff6b6b; color: white; border-color: #ff6b6b; font-weight: 600; }
-        .time-option input[type="checkbox"]:checked + label::after { content: ' ✓'; }
-        .not-available-option label { background: #fafafa; border: 2px dashed #ccc; }
-        .not-available-option input[type="checkbox"]:checked + label { background: #888; color: white; border-color: #888; }
-        .submit-section { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); z-index: 100; }
-        .submit-btn { width: 100%; max-width: 480px; margin: 0 auto; display: block; padding: 14px; border-radius: 30px; border: none; background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
-        .submit-btn:active { transform: scale(0.98); }
-        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .success-message, .error-message { display: none; padding: 12px; border-radius: 10px; text-align: center; margin-bottom: 15px; font-size: 0.9rem; }
-        .success-message { background: #4caf50; color: white; }
-        .error-message { background: #f44336; color: white; }
-        .success-message.show, .error-message.show { display: block; }
-        @media (min-width: 768px) {
-            body { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; }
-            .container { max-width: 900px; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-            .header { border-radius: 20px 20px 0 0; padding: 30px; }
-            .logo { width: 120px; }
-            .content { padding: 30px; }
-            .calendar-grid { gap: 12px; }
-            .calendar-day { min-height: 160px; padding: 14px 10px; }
-            .day-number { font-size: 1.2rem; margin-bottom: 10px; }
-            .time-option label { font-size: 0.85rem; padding: 10px 8px; }
-            h1 { font-size: 1.8rem; }
+
+        /* Grid Layout Fixes */
+        .calendar-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 4px; 
+            margin-bottom: 20px; 
         }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <img src="logo.png" alt="Rhythms School of Dance Logo">
-            </div>
-            <div class="category-badge">🌟 Juniors</div>
-            <h1>Rhythms School of Dance</h1>
-            <p class="subtitle">Parent Availability Calendar — Juniors</p>
-        </div>
-
-        <div class="content">
-            <div class="success-message" id="successMessage">✓ Your availability has been saved successfully!</div>
-            <div class="error-message" id="errorMessage">✗ <span id="errorText"></span></div>
-
-            <div class="parent-info">
-                <h2>Your Information</h2>
-                <div class="form-group">
-                    <label for="parentName">Parent Name *</label>
-                    <input type="text" id="parentName" placeholder="Enter your full name" required>
-                </div>
-                <div class="form-group">
-                    <label for="childName">Child's Name *</label>
-                    <input type="text" id="childName" placeholder="Enter child's name" required>
-                </div>
-            </div>
-
-            <div class="month-selector">
-                <button class="month-btn active" onclick="showMonth('may', event)">May</button>
-                <button class="month-btn" onclick="showMonth('june', event)">June</button>
-                <button class="month-btn" onclick="showMonth('july', event)">July</button>
-                <button class="month-btn" onclick="showMonth('august', event)">Aug</button>
-            </div>
-
-            <div id="may" class="calendar-container active">
-                <div class="calendar-header"><div class="month-year">May 2026</div></div>
-                <div class="calendar-grid" id="may-calendar"></div>
-            </div>
-            <div id="june" class="calendar-container">
-                <div class="calendar-header"><div class="month-year">June 2026</div></div>
-                <div class="calendar-grid" id="june-calendar"></div>
-            </div>
-            <div id="july" class="calendar-container">
-                <div class="calendar-header"><div class="month-year">July 2026</div></div>
-                <div class="calendar-grid" id="july-calendar"></div>
-            </div>
-            <div id="august" class="calendar-container">
-                <div class="calendar-header"><div class="month-year">August 2026</div></div>
-                <div class="calendar-grid" id="august-calendar"></div>
-            </div>
-
-            <div class="submit-section">
-                <button class="submit-btn" onclick="submitAvailability()" id="submitBtn">Submit Availability</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- supabase-config.js MUST load first so DB is available -->
-    <script src="supabase-config.js"></script>
-
-    <script>
-        const CATEGORY = "junior";
-        const CACHE_KEY = "rhythms_parent_availability_junior";
-
-        function saveCache() {
-            const parentName = document.getElementById("parentName").value;
-            const childName = document.getElementById("childName").value;
-            const checked = [];
-            document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => checked.push(cb.id));
-            localStorage.setItem(CACHE_KEY, JSON.stringify({ parentName, childName, checked }));
-        }
-
-        function loadCache() {
-            try {
-                const saved = localStorage.getItem(CACHE_KEY);
-                if (!saved) return;
-                const data = JSON.parse(saved);
-                const parentInput = document.getElementById("parentName");
-                const childInput = document.getElementById("childName");
-                if (parentInput) parentInput.value = data.parentName || "";
-                if (childInput) childInput.value = data.childName || "";
-                if (Array.isArray(data.checked)) {
-                    data.checked.forEach(id => { const cb = document.getElementById(id); if (cb) cb.checked = true; });
-                }
-            } catch (e) { console.error('Error loading cache:', e); }
-        }
-
-        function clearCache() { localStorage.removeItem(CACHE_KEY); }
-
-        const months = {
-            may: { name: 'May', year: 2026, days: 31, startDay: 4 },
-            june: { name: 'June', year: 2026, days: 30, startDay: 0 },
-            july: { name: 'July', year: 2026, days: 31, startDay: 3 },
-            august: { name: 'August', year: 2026, days: 31, startDay: 6 }
-        };
-        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-        function generateCalendar(monthKey) {
-            const month = months[monthKey];
-            const grid = document.getElementById(`${monthKey}-calendar`);
-            grid.innerHTML = '';
-            dayNames.forEach(day => {
-                const header = document.createElement('div');
-                header.className = 'day-header';
-                header.textContent = day;
-                grid.appendChild(header);
-            });
-            for (let i = 0; i < month.startDay; i++) {
-                const emptyDay = document.createElement('div');
-                emptyDay.className = 'calendar-day empty';
-                grid.appendChild(emptyDay);
-            }
-            for (let day = 1; day <= month.days; day++) {
-                const dayOfWeek = (month.startDay + day - 1) % 7;
-                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-                const dayDiv = document.createElement('div');
-                dayDiv.className = `calendar-day ${isWeekend ? 'weekend' : ''}`;
-                const dayNumber = document.createElement('div');
-                dayNumber.className = 'day-number';
-                dayNumber.textContent = day;
-                const timeOptions = document.createElement('div');
-                timeOptions.className = 'time-options';
-                if (isWeekend) {
-                    ['10AM-12PM', '12PM-4PM', '4PM-6PM'].forEach(slot => timeOptions.appendChild(createTimeOption(`${monthKey}-${day}-${slot}`, slot)));
-                } else {
-                    timeOptions.appendChild(createTimeOption(`${monthKey}-${day}-6-8`, '6-8 PM'));
-                }
-                timeOptions.appendChild(createTimeOption(`${monthKey}-${day}-na`, 'N/A', true));
-                dayDiv.appendChild(dayNumber);
-                dayDiv.appendChild(timeOptions);
-                grid.appendChild(dayDiv);
-            }
-        }
-
-        function createTimeOption(id, label, isNA = false) {
-            const div = document.createElement('div');
-            div.className = `time-option ${isNA ? 'not-available-option' : ''}`;
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = id;
-            const labelEl = document.createElement('label');
-            labelEl.htmlFor = id;
-            labelEl.textContent = label;
-            div.appendChild(checkbox);
-            div.appendChild(labelEl);
-            return div;
-        }
-
-        function showMonth(month, e) {
-            document.querySelectorAll('.calendar-container').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(month).classList.add('active');
-            if (e && e.target) e.target.classList.add('active');
-        }
-
-        function showMessage(type, text) {
-            const successMsg = document.getElementById('successMessage');
-            const errorMsg = document.getElementById('errorMessage');
-            successMsg.classList.remove('show');
-            errorMsg.classList.remove('show');
-            if (type === 'success') {
-                successMsg.classList.add('show');
-                setTimeout(() => successMsg.classList.remove('show'), 3000);
-            } else {
-                document.getElementById('errorText').textContent = text;
-                errorMsg.classList.add('show');
-                setTimeout(() => errorMsg.classList.remove('show'), 5000);
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        async function submitAvailability() {
-            const parentName = document.getElementById('parentName').value.trim();
-            const childName = document.getElementById('childName').value.trim();
-            const submitBtn = document.getElementById('submitBtn');
-            if (!parentName || !childName) { showMessage('error', 'Please fill in all required fields'); return; }
-
-            const availability = { parentName, childName, category: "junior", selections: {} };
-            document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
-                const parts = checkbox.id.split('-');
-                const month = parts[0];
-                const day = parts[1];
-                const label = checkbox.nextElementSibling.textContent.trim();
-                if (!availability.selections[month]) availability.selections[month] = {};
-                if (!availability.selections[month][day]) availability.selections[month][day] = [];
-                availability.selections[month][day].push(label);
-            });
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-            try {
-                await DB.add(availability);
-                showMessage('success', '');
-                document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => cb.checked = false);
-                document.getElementById('parentName').value = '';
-                document.getElementById('childName').value = '';
-                clearCache();
-            } catch (error) {
-                console.error('Error:', error);
-                showMessage('error', 'Failed to submit. Please try again.');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Availability';
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            Object.keys(months).forEach(monthKey => generateCalendar(monthKey));
-            setTimeout(() => loadCache(), 100);
-            document.addEventListener("input", saveCache);
-            document.addEventListener("change", saveCache);
-        });
-    </script>
-</body>
-</html>
+        .day-header { text-align:
