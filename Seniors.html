@@ -256,7 +256,7 @@
             const submitBtn = document.getElementById('submitBtn');
             if (!parentName || !childName) { showMessage('error', 'Please fill in all required fields'); return; }
 
-            const availability = { parentName, childName, category: CATEGORY, selections: {} };
+            const availability = { parentName, childName, category: "senior", selections: {} };
             document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
                 const parts = checkbox.id.split('-');
                 const month = parts[0];
