@@ -35,6 +35,7 @@ const DB = {
             body: JSON.stringify({
                 parent_name: submission.parentName,
                 child_name: submission.childName,
+                category: submission.category,
                 selections: submission.selections
             })
         });
