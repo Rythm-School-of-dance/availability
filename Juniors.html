@@ -36,6 +36,10 @@
         .logo { width: 90px; margin: 0 auto 10px; }
         .logo img { width: 100%; object-fit: contain; }
         h1 { font-size: 1.4rem; margin-bottom: 5px; }
+        
+        /* New Style Added */
+        .survey-title { font-size: 1.1rem; font-weight: 800; margin-top: 5px; text-transform: uppercase; }
+        
         .subtitle { font-size: 0.85rem; opacity: 0.9; }
         
         .content { padding: 8px; }
@@ -110,8 +114,6 @@
         .error-message { background: #f44336; color: white; }
         .success-message.show, .error-message.show { display: block; }
 
-        /* Thank You Section Styles */
-    /* Thank You State Styles */
         #thankYouState {
             display: none;
             text-align: center;
@@ -133,7 +135,6 @@
             font-weight: 600; 
             cursor: pointer;
         }
-
 
         @media (min-width: 768px) {
             body { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding: 20px; }
@@ -157,6 +158,7 @@
             </div>
             <div class="category-badge">🌟 Juniors</div>
             <h1>Rhythms School of Dance</h1>
+            <p class="survey-title">SUMMER AVAILABILITY SURVEY</p>
             <p class="subtitle">Parent Availability Calendar — Juniors</p>
         </div>
 
@@ -352,13 +354,9 @@
             submitBtn.textContent = 'Submitting...';
             try {
                 await DB.add(availability);
-                
-            
-                 // Success Handling: Show Thank You Screen
                 document.getElementById('displayChildName').textContent = childName;
                 document.getElementById('formState').style.display = 'none';
                 document.getElementById('thankYouState').style.display = 'block';
-                
                 clearCache();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
