@@ -37,9 +37,7 @@
         .logo img { width: 100%; object-fit: contain; }
         h1 { font-size: 1.4rem; margin-bottom: 5px; }
         
-        /* Added Survey Title Styling */
         .survey-title { font-size: 1.1rem; font-weight: 800; margin-top: 5px; text-transform: uppercase; }
-        
         .subtitle { font-size: 0.85rem; opacity: 0.9; }
         
         .content { padding: 8px; }
@@ -252,11 +250,12 @@
 
         function clearCache() { localStorage.removeItem(CACHE_KEY); }
 
+        /* CORRECTED START DAYS FOR 2026 */
         const months = {
-            may: { name: 'May', year: 2026, days: 31, startDay: 4 },
-            june: { name: 'June', year: 2026, days: 30, startDay: 0 },
-            july: { name: 'July', year: 2026, days: 31, startDay: 3 },
-            august: { name: 'August', year: 2026, days: 31, startDay: 6 }
+            may: { name: 'May', year: 2026, days: 31, startDay: 5 },    // May 1 is Friday
+            june: { name: 'June', year: 2026, days: 30, startDay: 1 },   // June 1 is Monday
+            july: { name: 'July', year: 2026, days: 31, startDay: 3 },   // July 1 is Wednesday
+            august: { name: 'August', year: 2026, days: 31, startDay: 6 } // August 1 is Saturday
         };
         const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
