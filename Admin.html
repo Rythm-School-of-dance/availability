@@ -3,49 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rhythms Admin - Final Fix</title>
+    <title>Rhythms Admin - Sorted Attendance</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, sans-serif; background: #f7f8fc; color: #333; line-height: 1.4; }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
 
         /* Header */
-        .header { background: #6366f1; color: white; padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
         .category-toggle-bar { display: flex; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px; }
-        .cat-btn { padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; color: white; background: transparent; font-weight: bold; font-size: 0.8rem; }
+        .cat-btn { padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; color: white; background: transparent; font-weight: bold; font-size: 0.8rem; transition: 0.2s; }
         .cat-btn.active { background: white; color: #6366f1; }
 
         /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; border-top: 4px solid #6366f1; }
+        .stat-card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; border-top: 4px solid #6366f1; transition: 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .stat-number { font-size: 1.4rem; font-weight: 800; }
         .stat-label { font-size: 0.65rem; text-transform: uppercase; color: #666; margin-top: 5px; }
 
-        /* Table Section */
+        /* Sorted Table */
         .card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .card h3 { margin-bottom: 15px; font-size: 1.1rem; color: #4338ca; }
+        .card h3 { margin-bottom: 15px; font-size: 1.1rem; color: #4338ca; display: flex; align-items: center; gap: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         th { text-align: left; padding: 12px; background: #f8fafc; color: #64748b; border-bottom: 2px solid #edf2f7; }
-        td { padding: 12px; border-bottom: 1px solid #edf2f7; vertical-align: top; }
-        .time-pill { background: #e0e7ff; color: #4338ca; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
-        .perfect-badge { background: #10b981; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 900; }
+        td { padding: 12px; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
+        
+        .time-pill { background: #e0e7ff; color: #4338ca; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
+        .perfect-row { background: #f0fdf4; }
+        .perfect-badge { background: #10b981; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; }
+        .missing-tag { color: #ef4444; font-weight: 600; font-size: 0.8rem; }
 
         /* Calendar */
         .month-nav { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
-        .month-btn { padding: 8px 20px; border: none; border-radius: 20px; cursor: pointer; background: white; font-weight: 600; white-space: nowrap; }
+        .month-btn { padding: 8px 20px; border: none; border-radius: 20px; cursor: pointer; background: white; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .month-btn.active { background: #6366f1; color: white; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
         .day-header { text-align: center; font-weight: 800; font-size: 0.7rem; color: #64748b; padding: 5px; }
-        .day { background: white; min-height: 90px; border-radius: 10px; padding: 8px; border: 1px solid #e2e8f0; cursor: pointer; position: relative; }
+        .day { background: white; min-height: 90px; border-radius: 10px; padding: 8px; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.2s; }
+        .day:hover { border-color: #6366f1; background: #fafbff; }
         .day.has-data { border-left: 4px solid #6366f1; background: #f5f7ff; }
         .day-num { font-weight: 700; margin-bottom: 5px; }
 
         /* Modal */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal.show { display: flex; }
-        .modal-content { background: white; width: 95%; max-width: 500px; border-radius: 20px; padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .modal-content { background: white; width: 95%; max-width: 500px; border-radius: 20px; padding: 20px; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
-        .dancer-row { padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+        .dancer-row { padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            th:nth-child(3), td:nth-child(3) { display: none; } /* Hide missing names on tiny screens */
+        }
     </style>
 </head>
 <body>
@@ -68,17 +78,17 @@
     </div>
 
     <div class="card">
-        <h3>📊 Best Common Dates (0-3 Missing)</h3>
+        <h3>🏆 Top Available Dates (Sorted by Attendance)</h3>
         <table id="best-dates-table">
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Available Time Slot</th>
-                    <th>Dancers Missing (from this team)</th>
+                    <th>Time Slot</th>
+                    <th>Missing Dancers</th>
                 </tr>
             </thead>
             <tbody id="best-dates-body">
-                <tr><td colspan="3" style="text-align:center; color:#999;">Loading availability...</td></tr>
+                <tr><td colspan="3" style="text-align:center; padding:20px; color:#999;">Analyzing attendance data...</td></tr>
             </tbody>
         </table>
     </div>
@@ -112,7 +122,7 @@
         try {
             allData = await DB.getAll();
             updateUI();
-        } catch (e) { console.error("Data fetch failed", e); }
+        } catch (e) { console.error(e); }
     }
 
     function setFilter(f) {
@@ -123,73 +133,75 @@
     }
 
     function updateUI() {
-        // 1. Get the official names for the currently selected team
-        let currentRoster = [];
-        if (activeFilter === 'both') {
-            currentRoster = [...ROSTERS.senior, ...ROSTERS.junior, ...ROSTERS.minor];
-        } else {
-            currentRoster = ROSTERS[activeFilter];
-        }
-
-        // 2. Filter data for the currently selected team
-        const filteredSubmissions = allData.filter(d => activeFilter === 'both' || (d.category || 'junior').toLowerCase() === activeFilter.toLowerCase());
+        let currentRoster = activeFilter === 'both' ? [...ROSTERS.senior, ...ROSTERS.junior, ...ROSTERS.minor] : ROSTERS[activeFilter];
+        const teamData = allData.filter(d => activeFilter === 'both' || (d.category || 'junior').toLowerCase() === activeFilter.toLowerCase());
         
-        // 3. Update Counts
         ['senior','junior','minor'].forEach(t => {
             const count = allData.filter(d => (d.category || 'junior').toLowerCase() === t.toLowerCase()).length;
             document.getElementById(t[0]+'-count').innerText = `${count}/${ROSTERS[t].length}`;
         });
 
-        renderBestDates(filteredSubmissions, currentRoster);
-        renderCalendar(filteredSubmissions);
+        renderBestDates(teamData, currentRoster);
+        renderCalendar(teamData);
         renderMonthNav();
     }
 
     function renderBestDates(data, roster) {
         const tbody = document.getElementById('best-dates-body');
-        tbody.innerHTML = '';
         const mInfo = MONTHS[currentMonth];
-        let foundAny = false;
+        let options = [];
 
-        // Loop through every day of the month
-        for (let dayNum = 1; dayNum <= mInfo.days; dayNum++) {
-            // Find all submissions that have ANY time selected for this specific day
-            const daySubmissions = data.filter(entry => entry.selections?.[currentMonth]?.[dayNum]);
-            if (daySubmissions.length === 0) continue;
+        // 1. Gather all possible valid slots
+        for (let d = 1; d <= mInfo.days; d++) {
+            const daySubs = data.filter(entry => entry.selections?.[currentMonth]?.[d]);
+            if (daySubs.length === 0) continue;
 
-            // Get a list of all unique time slots picked for this day (e.g. "5:00 PM", "6:00 PM")
-            const allPickedSlots = [...new Set(daySubmissions.flatMap(entry => entry.selections[currentMonth][dayNum]))].filter(s => s !== "N/A");
+            const slots = [...new Set(daySubs.flatMap(e => e.selections[currentMonth][d]))].filter(s => s !== "N/A");
 
-            allPickedSlots.forEach(slot => {
-                // Who specifically chose THIS slot?
-                const peopleInSlot = daySubmissions
-                    .filter(entry => entry.selections[currentMonth][dayNum].includes(slot))
-                    .map(entry => entry.child_name.trim().toLowerCase());
-
-                // Who from the official roster is NOT in that list?
-                const missingDancers = roster.filter(name => !peopleInSlot.includes(name.trim().toLowerCase()));
-
-                // Threshold: Show if 3 or fewer people are missing
-                if (missingDancers.length <= 3) {
-                    foundAny = true;
-                    tbody.innerHTML += `<tr>
-                        <td><b>${mInfo.name} ${dayNum}</b></td>
-                        <td><span class="time-pill">${slot}</span></td>
-                        <td>
-                            ${missingDancers.length === 0 ? '<span class="perfect-badge">PERFECT - ALL PRESENT</span>' : '<span style="color:#ef4444; font-weight:bold;">Missing: </span>' + missingDancers.join(', ')}
-                        </td>
-                    </tr>`;
+            slots.forEach(slot => {
+                const present = daySubs.filter(e => e.selections[currentMonth][d].includes(slot)).map(e => e.child_name.trim().toLowerCase());
+                const missing = roster.filter(name => !present.includes(name.trim().toLowerCase()));
+                
+                // Only consider slots where most of the team (missing 4 or less) can make it
+                if (missing.length <= 4) {
+                    options.push({
+                        dateStr: `${mInfo.name} ${d}`,
+                        slot: slot,
+                        missingCount: missing.length,
+                        missingNames: missing
+                    });
                 }
             });
         }
-        if (!foundAny) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">No high-attendance dates found for this team in ' + mInfo.name + '</td></tr>';
+
+        // 2. SORT: Least missing first (Perfect at the top)
+        options.sort((a, b) => a.missingCount - b.missingCount);
+
+        // 3. Render
+        tbody.innerHTML = '';
+        if (options.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">No high-attendance dates found yet.</td></tr>';
+            return;
+        }
+
+        options.forEach(opt => {
+            const rowClass = opt.missingCount === 0 ? 'perfect-row' : '';
+            tbody.innerHTML += `<tr class="${rowClass}">
+                <td><b>${opt.dateStr}</b></td>
+                <td><span class="time-pill">${opt.slot}</span></td>
+                <td>
+                    ${opt.missingCount === 0 ? 
+                        '<span class="perfect-badge">Full Team</span>' : 
+                        `<span class="missing-tag">Missing ${opt.missingCount}:</span> <span style="font-size:0.75rem; color:#666;">${opt.missingNames.join(', ')}</span>`}
+                </td>
+            </tr>`;
+        });
     }
 
     function renderCalendar(data) {
         const grid = document.getElementById('calendar-grid');
         grid.innerHTML = '';
         const m = MONTHS[currentMonth];
-
         ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(day => grid.innerHTML += `<div class="day-header">${day}</div>`);
         for (let i=0; i<m.start; i++) grid.innerHTML += `<div></div>`;
 
@@ -204,18 +216,13 @@
     }
 
     function showDayDetails(mName, d, bookings) {
-        const title = document.getElementById('modal-title');
+        document.getElementById('modal-title').innerText = `${mName} ${d} Detail`;
         const body = document.getElementById('modal-body');
-        title.innerText = `${mName} ${d} Attendance`;
-        body.innerHTML = bookings.length ? '' : 'No submissions for this date.';
-
+        body.innerHTML = bookings.length ? '' : 'No data.';
         bookings.forEach(b => {
             const times = b.selections[currentMonth][d].filter(t => t !== "N/A");
             body.innerHTML += `<div class="dancer-row">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <strong>${b.child_name}</strong>
-                    <span style="font-size:0.7rem; color:#666;">${(b.category || 'junior').toUpperCase()}</span>
-                </div>
+                <div style="display:flex; justify-content:space-between;"><strong>${b.child_name}</strong><span style="font-size:0.7rem; color:#999;">${(b.category||'').toUpperCase()}</span></div>
                 <div style="margin-top:5px;">${times.map(t => `<span class="time-pill">${t}</span>`).join(' ')}</div>
             </div>`;
         });
@@ -223,16 +230,14 @@
     }
 
     function showRoster(team) {
-        const title = document.getElementById('modal-title');
+        document.getElementById('modal-title').innerText = `${team.toUpperCase()} Tracking`;
         const body = document.getElementById('modal-body');
         const submitted = allData.filter(d => (d.category || 'junior').toLowerCase() === team.toLowerCase()).map(d => d.child_name.trim().toLowerCase());
-        
-        title.innerText = `${team.toUpperCase()} Submission Status`;
         body.innerHTML = ROSTERS[team].map(name => `
             <div class="dancer-row" style="display:flex; justify-content:space-between">
                 <span>${name}</span>
                 <span style="color:${submitted.includes(name.trim().toLowerCase()) ? '#10b981' : '#ef4444'}; font-weight:bold;">
-                    ${submitted.includes(name.trim().toLowerCase()) ? '✅ Received' : '❌ Still Missing'}
+                    ${submitted.includes(name.trim().toLowerCase()) ? '✅ Done' : '❌ Missing'}
                 </span>
             </div>
         `).join('');
