@@ -42,7 +42,7 @@
         /* --- CONTENT AREA --- */
         .content { padding: 15px; }
 
-        /* Search Section */
+        /* Search & Alerts */
         .search-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
         .search-container { position: relative; flex: 1; }
         .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #a0aec0; }
@@ -54,6 +54,10 @@
         .btn-clear {
             background: #f1f5f9; color: #64748b; padding: 11px 16px;
             border: none; border-radius: 12px; font-weight: 600; cursor: pointer; display: none;
+        }
+        .alert-banner {
+            background: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 12px; 
+            margin-bottom: 15px; font-size: 0.85rem; font-weight: 700; text-align: center; border: 1px solid #fecaca;
         }
 
         /* Stats Grid */
@@ -75,10 +79,10 @@
         .calendar-container.active { display: block; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .day-header { text-align: center; font-size: 0.65rem; font-weight: 800; padding: 8px; background: #667eea; color: white; border-radius: 6px; }
-        .calendar-day { background: white; border-radius: 10px; min-height: 75px; padding: 8px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; }
+        .calendar-day { background: white; border-radius: 10px; min-height: 75px; padding: 8px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; border: 2px solid transparent; }
         .calendar-day.weekend { background: #f8faff; }
         .calendar-day.empty { background: #f1f3f5; cursor: default; }
-        .calendar-day.has-bookings { background: #f0fdf4; border: 1px solid #dcfce7; }
+        .calendar-day.has-bookings { background: #f0fdf4; }
         
         .day-num { font-weight: 700; font-size: 0.9rem; margin-bottom: 2px; }
         .day-name { font-size: 0.6rem; color: #999; text-transform: uppercase; }
@@ -96,10 +100,12 @@
         .modal-content { background: white; width: 90%; max-width: 450px; border-radius: 20px; overflow: hidden; max-height: 85vh; display: flex; flex-direction: column; }
         .modal-header { background: #667eea; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
         .modal-body { padding: 15px; overflow-y: auto; }
-        .booking-card { background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; }
+        .booking-card { background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; position: relative; }
         .booking-card.minor { border-left-color: #0ea5e9; }
         .booking-card.junior { border-left-color: #f43f5e; }
         .booking-card.senior { border-left-color: #7c3aed; }
+        .booking-card.is-duplicate { border: 2px solid #ef4444 !important; background: #fff1f2; }
+
         .time-tag { background: #667eea; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px; }
         .btn-delete { background: #fee2e2; color: #ef4444; border: none; padding: 8px; border-radius: 8px; cursor: pointer; }
 
@@ -137,6 +143,8 @@
     </div>
 
     <div class="content">
+        <div id="duplicateBanner" class="alert-banner" style="display: none;"></div>
+
         <div class="search-row">
             <div class="search-container">
                 <span class="search-icon">🔍</span>
@@ -207,7 +215,36 @@
 
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-    // --- SEARCH & FILTER LOGIC ---
+    // --- DUPLICATE & AVAILABILITY LOGIC ---
+
+    function getDuplicateMap(data) {
+        const counts = {};
+        data.forEach(p => {
+            const name = p.child_name.trim().toLowerCase();
+            counts[name] = (counts[name] || 0) + 1;
+        });
+        return counts;
+    }
+
+    function analyzeDayAvailability(bookings) {
+        if (bookings.length === 0) return { perfect: [], partial: [] };
+        const allSlots = [...new Set(bookings.flatMap(b => b.slots))];
+        const analysis = { perfect: [], partial: [] };
+
+        allSlots.forEach(slot => {
+            const available = bookings.filter(b => b.slots.includes(slot));
+            const missing = bookings.filter(b => !b.slots.includes(slot));
+
+            if (missing.length === 0 && bookings.length > 1) {
+                analysis.perfect.push(slot);
+            } else if (missing.length > 0 && missing.length <= 2 && bookings.length > 2) { 
+                analysis.partial.push({ slot, missing: missing.map(d => d.child_name) });
+            }
+        });
+        return analysis;
+    }
+
+    // --- SEARCH & FILTER ---
     function handleSearch() {
         searchQuery = document.getElementById('adminSearch').value.toLowerCase();
         updateUI();
@@ -264,35 +301,35 @@
         });
         document.getElementById('stat-bookings').textContent = bookCount;
 
-        // Show/Hide Clear Button
-        document.getElementById('clearBtn').style.display = (searchQuery || activeFilter !== 'both') ? 'block' : 'none';
+        // Duplicate Banner
+        const dupMap = getDuplicateMap(allData);
+        const dupNames = Object.keys(dupMap).filter(name => dupMap[name] > 1);
+        const banner = document.getElementById('duplicateBanner');
+        if (dupNames.length > 0) {
+            banner.style.display = 'block';
+            banner.innerHTML = `⚠️ Data Warning: ${dupNames.length} dancer(s) have submitted multiple forms. Check Red-outlined cards.`;
+        } else {
+            banner.style.display = 'none';
+        }
 
-        // Rebuild Calendars
+        document.getElementById('clearBtn').style.display = (searchQuery || activeFilter !== 'both') ? 'block' : 'none';
         Object.keys(months).forEach(m => generateCalendar(m, filtered));
     }
 
-    // --- CALENDAR GENERATION ---
+    // --- CALENDAR ---
     function generateCalendar(monthKey, data) {
         const config = months[monthKey];
         const grid = document.getElementById(`${monthKey}-grid`);
         grid.innerHTML = '';
 
-        // Headers
         dayNames.forEach(d => {
-            const h = document.createElement('div');
-            h.className = 'day-header';
-            h.textContent = d;
-            grid.appendChild(h);
+            const h = document.createElement('div'); h.className = 'day-header'; h.textContent = d; grid.appendChild(h);
         });
 
-        // Empty starts
         for (let i = 0; i < config.startDay; i++) {
-            const empty = document.createElement('div');
-            empty.className = 'calendar-day empty';
-            grid.appendChild(empty);
+            const empty = document.createElement('div'); empty.className = 'calendar-day empty'; grid.appendChild(empty);
         }
 
-        // Days
         for (let day = 1; day <= config.days; day++) {
             const dayOfWeek = (config.startDay + day - 1) % 7;
             const bookings = [];
@@ -304,60 +341,89 @@
                 }
             });
 
+            const { perfect, partial } = analyzeDayAvailability(bookings);
             const dayDiv = document.createElement('div');
             dayDiv.className = `calendar-day ${dayOfWeek === 0 || dayOfWeek === 6 ? 'weekend' : ''} ${bookings.length > 0 ? 'has-bookings' : ''}`;
             
+            // Calendar Heatmap Styles
+            if (perfect.length > 0) {
+                dayDiv.style.border = "2px solid #10b981";
+                dayDiv.style.background = "#f0fdf4";
+            } else if (partial.length > 0) {
+                dayDiv.style.border = "2px dashed #fbbf24";
+            }
+
             let badgeHTML = '';
             if (bookings.length > 0) {
                 const cats = [...new Set(bookings.map(b => b.category || 'junior'))];
-                const badgeClass = cats.length > 1 ? 'mixed' : cats[0];
-                badgeHTML = `<div class="badge ${badgeClass}">${bookings.length}</div>`;
+                badgeHTML = `<div class="badge ${cats.length > 1 ? 'mixed' : cats[0]}">${bookings.length}</div>`;
                 dayDiv.onclick = () => showBookings(config.name, day, bookings);
             }
 
-            dayDiv.innerHTML = `
-                <div class="day-num">${day}</div>
-                <div class="day-name">${dayNames[dayOfWeek]}</div>
-                ${badgeHTML}
-            `;
+            dayDiv.innerHTML = `<div class="day-num">${day}</div><div class="day-name">${dayNames[dayOfWeek]}</div>${badgeHTML}`;
             grid.appendChild(dayDiv);
         }
     }
 
-    // --- MODAL & ACTIONS ---
     function showBookings(monthName, day, bookings) {
         document.getElementById('modalTitle').textContent = `${monthName} ${day}, 2026`;
+        const { perfect, partial } = analyzeDayAvailability(bookings);
+        const dupMap = getDuplicateMap(allData);
         let html = '';
+
+        // 1. Availability Reports
+        if (perfect.length > 0) {
+            html += `<div style="background:#ecfdf5; border:1px solid #10b981; padding:10px; border-radius:12px; margin-bottom:15px;">
+                        <div style="color:#065f46; font-weight:800; font-size:0.7rem; text-transform:uppercase;">✨ Perfect Match</div>
+                        <div style="margin-top:5px;">${perfect.map(s => `<span class="time-tag" style="background:#10b981">${s}</span>`).join('')}</div>
+                     </div>`;
+        }
+        if (partial.length > 0 && perfect.length === 0) {
+            html += `<div style="background:#fffbeb; border:1px solid #fbbf24; padding:10px; border-radius:12px; margin-bottom:15px;">
+                        <div style="color:#92400e; font-weight:800; font-size:0.7rem; text-transform:uppercase;">⚠️ Best Options (Partial)</div>`;
+            partial.forEach(p => {
+                html += `<div style="margin-top:8px; font-size:0.75rem;"><span class="time-tag" style="background:#f59e0b">${p.slot}</span>
+                         <div style="color:#b45309; margin-top:3px;">Missing: <b>${p.missing.join(', ')}</b></div></div>`;
+            });
+            html += `</div>`;
+        }
+
+        // 2. Booking Cards
         bookings.forEach(b => {
             const cat = b.category || 'junior';
+            const isDup = dupMap[b.child_name.trim().toLowerCase()] > 1;
+            const dateStr = b.created_at ? new Date(b.created_at).toLocaleDateString() : 'Unknown Date';
+
             html += `
-                <div class="booking-card ${cat}">
+                <div class="booking-card ${cat} ${isDup ? 'is-duplicate' : ''}">
                     <div style="flex:1">
-                        <div style="font-size:0.6rem; text-transform:uppercase; font-weight:800; color:#666">${cat}</div>
+                        <div style="font-size:0.6rem; text-transform:uppercase; font-weight:800; color:#666">
+                            ${cat} ${isDup ? '<span style="color:#ef4444">⚠️ DUPLICATE</span>' : ''}
+                        </div>
                         <div style="font-weight:700">${b.parent_name}</div>
-                        <div style="font-size:0.8rem; margin-bottom:5px">Student: ${b.child_name}</div>
+                        <div style="font-size:0.8rem;">Student: ${b.child_name}</div>
+                        <div style="font-size:0.6rem; color:#999; margin-bottom:5px;">Submitted: ${dateStr}</div>
                         <div>${b.slots.map(s => `<span class="time-tag">${s}</span>`).join('')}</div>
                     </div>
                     <button class="btn-delete" onclick="deleteEntry(${b.id})">🗑️</button>
                 </div>`;
         });
+        
         document.getElementById('modalBody').innerHTML = html;
         document.getElementById('bookingModal').classList.add('show');
     }
 
     async function deleteEntry(id) {
-        if (!confirm("Are you sure? This will remove the family's entire availability record.")) return;
+        if (!confirm("Remove this specific submission?")) return;
         await DB.delete(id);
         closeModal();
         refreshData();
     }
 
     function closeModal() { document.getElementById('bookingModal').classList.remove('show'); }
-
     function switchMonth(m, e) {
         document.querySelectorAll('.calendar-container, .month-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(m).classList.add('active');
-        e.target.classList.add('active');
+        document.getElementById(m).classList.add('active'); e.target.classList.add('active');
     }
 
     function exportToCSV() {
@@ -372,10 +438,7 @@
         });
         const blob = new Blob([csv], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `dance-availability-${activeFilter}.csv`;
-        a.click();
+        const a = document.createElement('a'); a.href = url; a.download = `dance-schedule.csv`; a.click();
     }
 
     window.addEventListener('load', refreshData);
