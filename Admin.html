@@ -3,145 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Rhythms School of Dance</title>
+    <title>Rhythms Admin Pro</title>
     <style>
-        /* --- CORE STYLES --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f8fc; color: #333; }
-        .container { max-width: 100%; margin: 0 auto; }
+        body { font-family: -apple-system, sans-serif; background: #f7f8fc; color: #333; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
 
-        /* --- HEADER --- */
-        .header {
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            color: white; padding: 15px; position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .header-content { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .header-title h1 { font-size: 1.1rem; }
-        
-        .header-actions { display: flex; gap: 8px; align-items: center; }
-        .category-toggle-bar {
-            display: flex; background: rgba(255,255,255,0.15);
-            border-radius: 30px; padding: 4px; gap: 2px;
-        }
-        .cat-btn {
-            padding: 6px 12px; border: none; border-radius: 20px;
-            cursor: pointer; font-weight: 700; font-size: 0.7rem;
-            background: transparent; color: white; transition: 0.2s;
-        }
+        /* Header & Nav */
+        .header { background: #6366f1; color: white; padding: 15px; border-radius: 15px 15px 0 0; display: flex; justify-content: space-between; align-items: center; }
+        .category-toggle-bar { display: flex; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px; }
+        .cat-btn { padding: 6px 12px; border: none; border-radius: 20px; cursor: pointer; color: white; background: transparent; font-weight: bold; font-size: 0.75rem; }
         .cat-btn.active { background: white; color: #6366f1; }
-        .btn-refresh { background: white; color: #6366f1; padding: 8px 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.8rem;}
 
-        .content { padding: 15px; }
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .stat-card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; border-top: 4px solid #6366f1; }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-number { font-size: 1.4rem; font-weight: 800; }
+        .stat-label { font-size: 0.65rem; text-transform: uppercase; color: #666; margin-top: 5px; }
 
-        /* Stats Grid - Now Clickable */
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .stat-card.clickable { cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
-        .stat-card.clickable:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-color: #6366f1; }
-        .stat-number { font-size: 1.3rem; font-weight: 700; color: #333; }
-        .stat-label { font-size: 0.6rem; color: #666; text-transform: uppercase; font-weight: 800; margin-top: 4px; }
-
-        /* Spreadsheet Table */
-        .summary-section { background: white; border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; }
-        th { background: #f8fafc; padding: 12px; color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; border-bottom: 2px solid #edf2f7; }
+        /* Table */
+        .card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { text-align: left; padding: 12px; background: #f8fafc; color: #64748b; }
         td { padding: 12px; border-bottom: 1px solid #edf2f7; }
-        .row-perfect { background: #f0fdf4; border-left: 4px solid #10b981; }
+        .time-pill { background: #e0e7ff; color: #4338ca; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-right: 4px; }
 
         /* Calendar */
-        .month-selector { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; }
-        .month-btn { flex: 0 0 auto; padding: 10px 18px; border-radius: 25px; border: none; background: white; font-weight: 600; cursor: pointer; }
+        .month-nav { display: flex; gap: 10px; margin-bottom: 15px; }
+        .month-btn { padding: 8px 15px; border: none; border-radius: 20px; cursor: pointer; background: white; font-weight: 600; }
         .month-btn.active { background: #6366f1; color: white; }
-        .calendar-container { display: none; }
-        .calendar-container.active { display: block; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .calendar-day { background: white; border-radius: 10px; min-height: 85px; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; }
-        
-        /* Popups */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+        .day-header { text-align: center; font-weight: 800; font-size: 0.7rem; color: #64748b; }
+        .day { background: white; min-height: 90px; border-radius: 10px; padding: 8px; border: 1px solid #e2e8f0; cursor: pointer; }
+        .day.has-data { border-left: 4px solid #6366f1; background: #f0f4ff; }
+        .day-num { font-weight: 700; margin-bottom: 5px; }
+
+        /* Modal */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
         .modal.show { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 450px; border-radius: 20px; overflow: hidden; max-height: 85vh; display: flex; flex-direction: column; }
-        .modal-header { background: #6366f1; color: white; padding: 15px; display: flex; justify-content: space-between; }
-        .modal-body { padding: 15px; overflow-y: auto; }
-        .list-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-
-        @media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } .container { max-width: 1200px; margin: 20px auto; border-radius: 20px; } }
+        .modal-content { background: white; width: 95%; max-width: 500px; border-radius: 20px; padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .dancer-row { padding: 10px; border-bottom: 1px solid #f1f5f9; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <div class="header-content">
-            <h1>Rhythms Admin</h1>
-            <div class="header-actions">
-                <div class="category-toggle-bar">
-                    <button class="cat-btn" onclick="setFilter('minor')">Minors</button>
-                    <button class="cat-btn" onclick="setFilter('junior')">Juniors</button>
-                    <button class="cat-btn" onclick="setFilter('senior')">Seniors</button>
-                    <button class="cat-btn active" onclick="setFilter('both')">All</button>
-                </div>
-                <button class="btn-refresh" onclick="refreshData()">↺</button>
-            </div>
+        <h2>Rhythms Dashboard</h2>
+        <div class="category-toggle-bar">
+            <button class="cat-btn active" id="btn-both" onclick="setFilter('both')">All</button>
+            <button class="cat-btn" id="btn-senior" onclick="setFilter('senior')">Seniors</button>
+            <button class="cat-btn" id="btn-junior" onclick="setFilter('junior')">Juniors</button>
+            <button class="cat-btn" id="btn-minor" onclick="setFilter('minor')">Minors</button>
         </div>
     </div>
 
-    <div class="content">
-        <div class="stats-grid">
-            <div class="stat-card clickable" onclick="showTeamList('senior')" style="border-top: 4px solid #7c3aed;">
-                <div class="stat-number" id="stat-senior">0</div>
-                <div class="stat-label">Seniors Submissions</div>
-            </div>
-            <div class="stat-card clickable" onclick="showTeamList('junior')" style="border-top: 4px solid #f43f5e;">
-                <div class="stat-number" id="stat-junior">0</div>
-                <div class="stat-label">Juniors Submissions</div>
-            </div>
-            <div class="stat-card clickable" onclick="showTeamList('minor')" style="border-top: 4px solid #0ea5e9;">
-                <div class="stat-number" id="stat-minor">0</div>
-                <div class="stat-label">Minors Submissions</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="stat-total">0</div>
-                <div class="stat-label">Total Overall</div>
-            </div>
-        </div>
-
-        <div class="summary-section">
-            <h2 style="font-size: 1rem; margin-bottom: 10px;">Common Availability Spreadsheet</h2>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr><th>Status</th><th>Date</th><th>Slot</th><th>Missing</th></tr>
-                    </thead>
-                    <tbody id="summaryTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="month-selector">
-            <button class="month-btn active" onclick="switchMonth('may', event)">May</button>
-            <button class="month-btn" onclick="switchMonth('june', event)">June</button>
-            <button class="month-btn" onclick="switchMonth('july', event)">July</button>
-            <button class="month-btn" onclick="switchMonth('august', event)">August</button>
-        </div>
-
-        <div id="may" class="calendar-container active"><div class="calendar-grid" id="may-grid"></div></div>
-        <div id="june" class="calendar-container"><div class="calendar-grid" id="june-grid"></div></div>
-        <div id="july" class="calendar-container"><div class="calendar-grid" id="july-grid"></div></div>
-        <div id="august" class="calendar-container"><div class="calendar-grid" id="august-grid"></div></div>
+    <div class="stats-grid">
+        <div class="stat-card" onclick="showRoster('senior')"><div class="stat-number" id="s-count">0/11</div><div class="stat-label">Seniors (Click List)</div></div>
+        <div class="stat-card" onclick="showRoster('junior')"><div class="stat-number" id="j-count">0/18</div><div class="stat-label">Juniors (Click List)</div></div>
+        <div class="stat-card" onclick="showRoster('minor')"><div class="stat-number" id="m-count">0/12</div><div class="stat-label">Minors (Click List)</div></div>
     </div>
+
+    <div class="card">
+        <h3>Best Dates (0-3 Missing)</h3>
+        <table>
+            <thead><tr><th>Date</th><th>Common Time</th><th>Missing Dancers</th></tr></thead>
+            <tbody id="best-dates-body"></tbody>
+        </table>
+    </div>
+
+    <div class="month-nav" id="month-nav"></div>
+    <div class="calendar-grid" id="calendar-grid"></div>
 </div>
 
-<div id="bookingModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 id="modalTitle">Details</h3>
-            <button style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;" onclick="closeModal()">×</button>
-        </div>
-        <div class="modal-body" id="modalBody"></div>
-    </div>
-</div>
+<div id="modal" class="modal"><div class="modal-content"><div class="modal-header"><h3 id="modal-title"></h3><button onclick="closeModal()" style="border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button></div><div id="modal-body"></div></div></div>
 
 <script src="supabase-config.js"></script>
 <script>
@@ -151,95 +88,127 @@
         minor: ["Shriya Natarajan", "Shyla Natarajan", "Ivania Bhatia", "Alenka Gupta", "Saachi Gupta", "Naysha Kanvinde", "Pravina Nair", "Dhwani Nikhil", "Anagha Rao", "Amaya Mary Robert", "Shivani Sreejith", "Keerthi Srinivasan"]
     };
 
+    const MONTHS = {
+        may: { name: 'May', days: 31, start: 4 },
+        june: { name: 'June', days: 30, start: 0 },
+        july: { name: 'July', days: 31, start: 3 },
+        august: { name: 'August', days: 31, start: 6 }
+    };
+
     let allData = [];
     let activeFilter = 'both';
-    let currentMonthKey = 'may';
+    let currentMonth = 'may';
 
     async function refreshData() {
         allData = await DB.getAll();
         updateUI();
     }
 
+    function setFilter(f) {
+        activeFilter = f;
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-'+f).classList.add('active');
+        updateUI();
+    }
+
     function updateUI() {
-        const filtered = allData.filter(p => activeFilter === 'both' || (p.category || 'junior') === activeFilter);
+        const roster = activeFilter === 'both' ? [...ROSTERS.senior, ...ROSTERS.junior, ...ROSTERS.minor] : ROSTERS[activeFilter];
+        const data = allData.filter(d => activeFilter === 'both' || (d.category || 'junior') === activeFilter);
         
         // Update Stats
-        ['senior', 'junior', 'minor'].forEach(team => {
-            const count = allData.filter(p => (p.category || 'junior') === team).length;
-            document.getElementById(`stat-${team}`).textContent = `${count}/${ROSTERS[team].length}`;
-        });
-        document.getElementById('stat-total').textContent = allData.length;
-
-        updateSummaryTable();
-        ['may','june','july','august'].forEach(m => generateCalendar(m, filtered));
-    }
-
-    // --- NEW: POPUP FOR TEAM SUBMISSIONS ---
-    function showTeamList(team) {
-        const roster = ROSTERS[team];
-        const submittedNames = allData
-            .filter(p => (p.category || 'junior') === team)
-            .map(p => p.child_name.trim().toLowerCase());
-
-        document.getElementById('modalTitle').textContent = team.toUpperCase() + " Tracker";
-        let html = `<div style="margin-bottom:15px; font-weight:bold; color:#6366f1;">Summary: ${submittedNames.length} / ${roster.length} Submitted</div>`;
-        
-        roster.forEach(name => {
-            const done = submittedNames.includes(name.toLowerCase());
-            html += `<div class="list-item">
-                <span>${name}</span>
-                <span style="color:${done ? '#10b981' : '#ef4444'}; font-weight:bold;">${done ? '✅ Done' : '❌ Missing'}</span>
-            </div>`;
+        ['senior','junior','minor'].forEach(t => {
+            const submitted = allData.filter(d => (d.category || 'junior') === t).length;
+            document.getElementById(t[0]+'-count').innerText = `${submitted}/${ROSTERS[t].length}`;
         });
 
-        document.getElementById('modalBody').innerHTML = html;
-        document.getElementById('bookingModal').classList.add('show');
+        renderBestDates(data, roster);
+        renderCalendar(data);
+        renderMonthNav();
     }
 
-    function updateSummaryTable() {
-        const tbody = document.getElementById('summaryTableBody');
+    function renderBestDates(data, roster) {
+        const tbody = document.getElementById('best-dates-body');
         tbody.innerHTML = '';
-        const roster = activeFilter === 'both' ? [...ROSTERS.senior, ...ROSTERS.junior, ...ROSTERS.minor] : ROSTERS[activeFilter];
-        const month = { may:31, june:30, july:31, august:31 }[currentMonthKey];
+        const m = MONTHS[currentMonth];
 
-        for (let d = 1; d <= month; d++) {
-            const bookings = allData.filter(p => (activeFilter === 'both' || (p.category || 'junior') === activeFilter) && p.selections?.[currentMonthKey]?.[d]);
-            if (bookings.length === 0) continue;
+        for (let d = 1; d <= m.days; d++) {
+            const bookings = data.filter(entry => entry.selections?.[currentMonth]?.[d]);
+            if (!bookings.length) continue;
 
-            const slots = [...new Set(bookings.flatMap(b => b.selections[currentMonthKey][d]))].filter(s => s !== "N/A");
+            const slots = [...new Set(bookings.flatMap(b => b.selections[currentMonth][d]))].filter(s => s !== "N/A");
             slots.forEach(slot => {
-                const available = bookings.filter(b => b.selections[currentMonthKey][d].includes(slot)).map(b => b.child_name.trim().toLowerCase());
+                const available = bookings.filter(b => b.selections[currentMonth][d].includes(slot)).map(b => b.child_name.trim().toLowerCase());
                 const missing = roster.filter(n => !available.includes(n.toLowerCase()));
 
                 if (missing.length <= 3) {
-                    const row = document.createElement('tr');
-                    if (missing.length === 0) row.className = 'row-perfect';
-                    row.innerHTML = `
-                        <td>${missing.length === 0 ? '⭐ PERFECT' : 'MAJORITY'}</td>
-                        <td>${currentMonthKey.toUpperCase()} ${d}</td>
-                        <td>${slot}</td>
-                        <td style="color:#ef4444">${missing.length === 0 ? 'None' : missing.join(', ')}</td>
-                    `;
-                    tbody.appendChild(row);
+                    tbody.innerHTML += `<tr>
+                        <td><b>${m.name} ${d}</b></td>
+                        <td><span class="time-pill">${slot}</span></td>
+                        <td style="color:#ef4444; font-size:0.75rem">${missing.length === 0 ? '<span style="color:green">Full Team!</span>' : missing.join(', ')}</td>
+                    </tr>`;
                 }
             });
         }
     }
 
-    function generateCalendar(mKey, data) {
-        const grid = document.getElementById(`${mKey}-grid`);
-        if (!grid) return; grid.innerHTML = '';
-        for (let d = 1; d <= 31; d++) { // Simplified for demo
+    function renderCalendar(data) {
+        const grid = document.getElementById('calendar-grid');
+        grid.innerHTML = '';
+        const m = MONTHS[currentMonth];
+
+        ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(day => grid.innerHTML += `<div class="day-header">${day}</div>`);
+        for (let i=0; i<m.start; i++) grid.innerHTML += `<div></div>`;
+
+        for (let d=1; d<=m.days; d++) {
+            const dayData = data.filter(entry => entry.selections?.[currentMonth]?.[d]);
             const dayDiv = document.createElement('div');
-            dayDiv.className = 'calendar-day';
-            dayDiv.innerHTML = `<div style="font-weight:bold">${d}</div>`;
+            dayDiv.className = `day ${dayData.length ? 'has-data' : ''}`;
+            dayDiv.innerHTML = `<div class="day-num">${d}</div><div style="font-size:0.65rem">${dayData.length ? dayData.length + ' Dancers' : ''}</div>`;
+            dayDiv.onclick = () => showDayDetails(m.name, d, dayData);
             grid.appendChild(dayDiv);
         }
     }
 
-    function setFilter(f) { activeFilter = f; document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(f))); updateUI(); }
-    function switchMonth(m, e) { currentMonthKey = m; document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active')); e.target.classList.add('active'); updateUI(); }
-    function closeModal() { document.getElementById('bookingModal').classList.remove('show'); }
+    function showDayDetails(mName, d, bookings) {
+        const title = document.getElementById('modal-title');
+        const body = document.getElementById('modal-body');
+        title.innerText = `${mName} ${d} - Availability`;
+        body.innerHTML = bookings.length ? '' : 'No one available.';
+
+        bookings.forEach(b => {
+            const times = b.selections[currentMonth][d].filter(t => t !== "N/A");
+            body.innerHTML += `<div class="dancer-row">
+                <strong>${b.child_name}</strong> (${b.category || 'junior'})<br>
+                ${times.map(t => `<span class="time-pill">${t}</span>`).join('')}
+            </div>`;
+        });
+        document.getElementById('modal').classList.add('show');
+    }
+
+    function showRoster(team) {
+        const title = document.getElementById('modal-title');
+        const body = document.getElementById('modal-body');
+        const submitted = allData.filter(d => (d.category || 'junior') === team).map(d => d.child_name.toLowerCase());
+        
+        title.innerText = `${team.toUpperCase()} Roster Status`;
+        body.innerHTML = ROSTERS[team].map(name => `
+            <div class="dancer-row" style="display:flex; justify-content:space-between">
+                <span>${name}</span>
+                <span style="color:${submitted.includes(name.toLowerCase()) ? 'green' : 'red'}">${submitted.includes(name.toLowerCase()) ? '✅ Done' : '❌ Missing'}</span>
+            </div>
+        `).join('');
+        document.getElementById('modal').classList.add('show');
+    }
+
+    function renderMonthNav() {
+        const nav = document.getElementById('month-nav');
+        nav.innerHTML = '';
+        Object.keys(MONTHS).forEach(mKey => {
+            nav.innerHTML += `<button class="month-btn ${currentMonth === mKey ? 'active' : ''}" onclick="currentMonth='${mKey}'; updateUI();">${MONTHS[mKey].name}</button>`;
+        });
+    }
+
+    function closeModal() { document.getElementById('modal').classList.remove('show'); }
     window.onload = refreshData;
 </script>
 </body>
