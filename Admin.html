@@ -22,7 +22,6 @@
         .header-title h1 { font-size: 1.1rem; }
         .subtitle { font-size: 0.75rem; opacity: 0.8; }
 
-        /* --- CONTROLS --- */
         .header-actions { display: flex; gap: 8px; align-items: center; }
         .category-toggle-bar {
             display: flex; background: rgba(255,255,255,0.15);
@@ -39,73 +38,55 @@
         .btn-export { background: #4caf50; color: white; }
         .btn-refresh { background: white; color: #667eea; }
 
-        /* --- CONTENT AREA --- */
         .content { padding: 15px; }
 
-        /* Search & Alerts */
+        /* Alerts & Search */
+        .alert-banner { background: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 12px; margin-bottom: 15px; font-size: 0.85rem; font-weight: 700; text-align: center; border: 1px solid #fecaca; }
         .search-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
         .search-container { position: relative; flex: 1; }
         .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #a0aec0; }
-        .search-input {
-            width: 100%; padding: 12px 15px 12px 40px; border-radius: 12px;
-            border: 1px solid #e0e4f0; outline: none; transition: 0.2s;
-        }
-        .search-input:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
-        .btn-clear {
-            background: #f1f5f9; color: #64748b; padding: 11px 16px;
-            border: none; border-radius: 12px; font-weight: 600; cursor: pointer; display: none;
-        }
-        .alert-banner {
-            background: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 12px; 
-            margin-bottom: 15px; font-size: 0.85rem; font-weight: 700; text-align: center; border: 1px solid #fecaca;
-        }
+        .search-input { width: 100%; padding: 12px 15px 12px 40px; border-radius: 12px; border: 1px solid #e0e4f0; outline: none; }
 
-        /* Stats Grid */
+        /* Spreadsheet / Summary Table */
+        .summary-section { background: white; border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .summary-section h2 { font-size: 1rem; margin-bottom: 15px; color: #4a5568; display: flex; align-items: center; gap: 8px; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; }
+        th { background: #f8fafc; padding: 12px; color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; border-bottom: 2px solid #edf2f7; }
+        td { padding: 12px; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
+        .row-perfect { background: #f0fdf4; }
+        .row-partial { background: white; }
+        .status-pill { padding: 4px 8px; border-radius: 20px; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; }
+        .status-perfect { background: #10b981; color: white; }
+        .status-partial { background: #fbbf24; color: #92400e; }
+
+        /* Calendar Styles */
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
         .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #eee; }
-        .stat-card.minor::after { background: #0ea5e9; }
-        .stat-card.junior::after { background: #f43f5e; }
-        .stat-card.senior::after { background: #7c3aed; }
-        .stat-number { font-size: 1.5rem; font-weight: 700; color: #333; }
+        .stat-number { font-size: 1.5rem; font-weight: 700; }
         .stat-label { font-size: 0.65rem; color: #666; text-transform: uppercase; font-weight: 800; margin-top: 4px; }
 
-        /* --- CALENDAR --- */
-        .month-selector { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; padding-bottom: 5px; }
-        .month-btn { flex: 0 0 auto; padding: 10px 18px; border-radius: 25px; border: none; background: white; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .month-selector { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px; }
+        .month-btn { flex: 0 0 auto; padding: 10px 18px; border-radius: 25px; border: none; background: white; font-weight: 600; cursor: pointer; }
         .month-btn.active { background: #667eea; color: white; }
 
         .calendar-container { display: none; }
         .calendar-container.active { display: block; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .day-header { text-align: center; font-size: 0.65rem; font-weight: 800; padding: 8px; background: #667eea; color: white; border-radius: 6px; }
-        .calendar-day { background: white; border-radius: 10px; min-height: 75px; padding: 8px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; border: 2px solid transparent; }
-        .calendar-day.weekend { background: #f8faff; }
-        .calendar-day.empty { background: #f1f3f5; cursor: default; }
+        .calendar-day { background: white; border-radius: 10px; min-height: 80px; padding: 8px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.03); cursor: pointer; border: 2px solid transparent; }
         .calendar-day.has-bookings { background: #f0fdf4; }
-        
-        .day-num { font-weight: 700; font-size: 0.9rem; margin-bottom: 2px; }
-        .day-name { font-size: 0.6rem; color: #999; text-transform: uppercase; }
-        
-        /* Badges */
+        .day-num { font-weight: 700; font-size: 0.9rem; }
         .badge { display: inline-block; padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; color: white; margin-top: 5px; }
-        .badge.minor { background: #0ea5e9; }
-        .badge.junior { background: #f43f5e; }
-        .badge.senior { background: #7c3aed; }
-        .badge.mixed { background: #475569; }
 
-        /* --- MODAL --- */
+        /* Modal */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
         .modal.show { display: flex; }
         .modal-content { background: white; width: 90%; max-width: 450px; border-radius: 20px; overflow: hidden; max-height: 85vh; display: flex; flex-direction: column; }
-        .modal-header { background: #667eea; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header { background: #667eea; color: white; padding: 15px; display: flex; justify-content: space-between; }
         .modal-body { padding: 15px; overflow-y: auto; }
-        .booking-card { background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; position: relative; }
-        .booking-card.minor { border-left-color: #0ea5e9; }
-        .booking-card.junior { border-left-color: #f43f5e; }
-        .booking-card.senior { border-left-color: #7c3aed; }
-        .booking-card.is-duplicate { border: 2px solid #ef4444 !important; background: #fff1f2; }
-
+        .booking-card { background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #cbd5e1; display: flex; justify-content: space-between; }
         .time-tag { background: #667eea; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px; }
         .btn-delete { background: #fee2e2; color: #ef4444; border: none; padding: 8px; border-radius: 8px; cursor: pointer; }
 
@@ -145,35 +126,40 @@
     <div class="content">
         <div id="duplicateBanner" class="alert-banner" style="display: none;"></div>
 
+        <div class="summary-section">
+            <h2>📅 Best Rehearsal Opportunities (Current Month)</h2>
+            <div class="table-wrapper">
+                <table id="commonSlotsTable">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Available Slots</th>
+                            <th>Missing Dancers</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summaryTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
         <div class="search-row">
             <div class="search-container">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="adminSearch" class="search-input" placeholder="Search child or parent name..." oninput="handleSearch()">
+                <input type="text" id="adminSearch" class="search-input" placeholder="Search name..." oninput="handleSearch()">
             </div>
-            <button id="clearBtn" class="btn-clear" onclick="clearFilters()">Clear All</button>
         </div>
 
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-number" id="stat-total">0</div>
-                <div class="stat-label">Total Families</div>
+                <div class="stat-label">Families</div>
             </div>
-            <div class="stat-card minor">
-                <div class="stat-number" id="stat-minor" style="color:#0ea5e9">0</div>
-                <div class="stat-label">Minors</div>
-            </div>
-            <div class="stat-card junior">
-                <div class="stat-number" id="stat-junior" style="color:#f43f5e">0</div>
-                <div class="stat-label">Juniors</div>
-            </div>
-            <div class="stat-card senior">
-                <div class="stat-number" id="stat-senior" style="color:#7c3aed">0</div>
-                <div class="stat-label">Seniors</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="stat-bookings">0</div>
-                <div class="stat-label">Total Days Booked</div>
-            </div>
+            <div class="stat-card" style="border-top:3px solid #0ea5e9"><div class="stat-number" id="stat-minor">0</div><div class="stat-label">Minors</div></div>
+            <div class="stat-card" style="border-top:3px solid #f43f5e"><div class="stat-number" id="stat-junior">0</div><div class="stat-label">Juniors</div></div>
+            <div class="stat-card" style="border-top:3px solid #7c3aed"><div class="stat-number" id="stat-senior">0</div><div class="stat-label">Seniors</div></div>
+            <div class="stat-card"><div class="stat-number" id="stat-bookings">0</div><div class="stat-label">Total Days</div></div>
         </div>
 
         <div class="month-selector">
@@ -204,27 +190,17 @@
 <script>
     let allData = [];
     let activeFilter = 'both';
+    let currentMonthKey = 'may';
     let searchQuery = '';
 
     const months = {
-        may: { name: 'May', year: 2026, days: 31, startDay: 4 },
-        june: { name: 'June', year: 2026, days: 30, startDay: 0 },
-        july: { name: 'July', year: 2026, days: 31, startDay: 3 },
-        august: { name: 'August', year: 2026, days: 31, startDay: 6 }
+        may: { name: 'May', days: 31, startDay: 4 },
+        june: { name: 'June', days: 30, startDay: 0 },
+        july: { name: 'July', days: 31, startDay: 3 },
+        august: { name: 'August', days: 31, startDay: 6 }
     };
 
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-    // --- DUPLICATE & AVAILABILITY LOGIC ---
-
-    function getDuplicateMap(data) {
-        const counts = {};
-        data.forEach(p => {
-            const name = p.child_name.trim().toLowerCase();
-            counts[name] = (counts[name] || 0) + 1;
-        });
-        return counts;
-    }
 
     function analyzeDayAvailability(bookings) {
         if (bookings.length === 0) return { perfect: [], partial: [] };
@@ -232,109 +208,25 @@
         const analysis = { perfect: [], partial: [] };
 
         allSlots.forEach(slot => {
-            const available = bookings.filter(b => b.slots.includes(slot));
             const missing = bookings.filter(b => !b.slots.includes(slot));
-
             if (missing.length === 0 && bookings.length > 1) {
                 analysis.perfect.push(slot);
             } else if (missing.length > 0 && missing.length <= 2 && bookings.length > 2) { 
-                analysis.partial.push({ slot, missing: missing.map(d => d.child_name) });
+                analysis.partial.push({ slot, missingNames: missing.map(d => d.child_name) });
             }
         });
         return analysis;
     }
 
-    // --- SEARCH & FILTER ---
-    function handleSearch() {
-        searchQuery = document.getElementById('adminSearch').value.toLowerCase();
-        updateUI();
-    }
-
-    function setFilter(cat) {
-        activeFilter = cat;
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        if (event) event.target.classList.add('active');
-        document.getElementById('currentViewLabel').textContent = cat === 'both' ? 'All Categories' : cat.charAt(0).toUpperCase() + cat.slice(1) + 's Only';
-        updateUI();
-    }
-
-    function clearFilters() {
-        searchQuery = '';
-        activeFilter = 'both';
-        document.getElementById('adminSearch').value = '';
-        document.querySelectorAll('.cat-btn').forEach(b => {
-            b.classList.remove('active');
-            if(b.textContent.includes('All')) b.classList.add('active');
-        });
-        updateUI();
-    }
-
-    function getFilteredData() {
-        return allData.filter(p => {
-            const matchesCat = activeFilter === 'both' || (p.category || 'junior') === activeFilter;
-            const matchesSearch = p.parent_name.toLowerCase().includes(searchQuery) || 
-                                 p.child_name.toLowerCase().includes(searchQuery);
-            return matchesCat && matchesSearch;
-        });
-    }
-
-    // --- DATA HANDLING ---
-    async function refreshData() {
-        try {
-            allData = await DB.getAll();
-            updateUI();
-        } catch (e) { console.error("Refresh failed", e); }
-    }
-
-    function updateUI() {
-        const filtered = getFilteredData();
-        
-        // Update Stats
-        document.getElementById('stat-total').textContent = filtered.length;
-        document.getElementById('stat-minor').textContent = allData.filter(p => p.category === 'minor').length;
-        document.getElementById('stat-junior').textContent = allData.filter(p => (p.category || 'junior') === 'junior').length;
-        document.getElementById('stat-senior').textContent = allData.filter(p => p.category === 'senior').length;
-        
-        let bookCount = 0;
-        filtered.forEach(p => {
-            Object.values(p.selections || {}).forEach(m => bookCount += Object.keys(m).length);
-        });
-        document.getElementById('stat-bookings').textContent = bookCount;
-
-        // Duplicate Banner
-        const dupMap = getDuplicateMap(allData);
-        const dupNames = Object.keys(dupMap).filter(name => dupMap[name] > 1);
-        const banner = document.getElementById('duplicateBanner');
-        if (dupNames.length > 0) {
-            banner.style.display = 'block';
-            banner.innerHTML = `⚠️ Data Warning: ${dupNames.length} dancer(s) have submitted multiple forms. Check Red-outlined cards.`;
-        } else {
-            banner.style.display = 'none';
-        }
-
-        document.getElementById('clearBtn').style.display = (searchQuery || activeFilter !== 'both') ? 'block' : 'none';
-        Object.keys(months).forEach(m => generateCalendar(m, filtered));
-    }
-
-    // --- CALENDAR ---
-    function generateCalendar(monthKey, data) {
+    function updateSummaryTable(monthKey, filteredData) {
+        const tbody = document.getElementById('summaryTableBody');
+        tbody.innerHTML = '';
         const config = months[monthKey];
-        const grid = document.getElementById(`${monthKey}-grid`);
-        grid.innerHTML = '';
-
-        dayNames.forEach(d => {
-            const h = document.createElement('div'); h.className = 'day-header'; h.textContent = d; grid.appendChild(h);
-        });
-
-        for (let i = 0; i < config.startDay; i++) {
-            const empty = document.createElement('div'); empty.className = 'calendar-day empty'; grid.appendChild(empty);
-        }
+        let foundAny = false;
 
         for (let day = 1; day <= config.days; day++) {
-            const dayOfWeek = (config.startDay + day - 1) % 7;
             const bookings = [];
-            
-            data.forEach(p => {
+            filteredData.forEach(p => {
                 if (p.selections?.[monthKey]?.[day]) {
                     const slots = p.selections[monthKey][day].filter(s => s !== "N/A");
                     if (slots.length > 0) bookings.push({...p, slots});
@@ -342,107 +234,101 @@
             });
 
             const { perfect, partial } = analyzeDayAvailability(bookings);
-            const dayDiv = document.createElement('div');
-            dayDiv.className = `calendar-day ${dayOfWeek === 0 || dayOfWeek === 6 ? 'weekend' : ''} ${bookings.length > 0 ? 'has-bookings' : ''}`;
-            
-            // Calendar Heatmap Styles
-            if (perfect.length > 0) {
-                dayDiv.style.border = "2px solid #10b981";
-                dayDiv.style.background = "#f0fdf4";
-            } else if (partial.length > 0) {
-                dayDiv.style.border = "2px dashed #fbbf24";
-            }
 
-            let badgeHTML = '';
-            if (bookings.length > 0) {
-                const cats = [...new Set(bookings.map(b => b.category || 'junior'))];
-                badgeHTML = `<div class="badge ${cats.length > 1 ? 'mixed' : cats[0]}">${bookings.length}</div>`;
-                dayDiv.onclick = () => showBookings(config.name, day, bookings);
-            }
+            if (perfect.length > 0 || partial.length > 0) {
+                foundAny = true;
+                const row = document.createElement('tr');
+                row.className = perfect.length > 0 ? 'row-perfect' : 'row-partial';
+                
+                const status = perfect.length > 0 
+                    ? '<span class="status-pill status-perfect">Perfect Match</span>' 
+                    : '<span class="status-pill status-partial">High Majority</span>';
 
-            dayDiv.innerHTML = `<div class="day-num">${day}</div><div class="day-name">${dayNames[dayOfWeek]}</div>${badgeHTML}`;
-            grid.appendChild(dayDiv);
+                const times = perfect.length > 0 ? perfect : partial.map(p => p.slot);
+                const missing = perfect.length > 0 ? 'None' : [...new Set(partial.flatMap(p => p.missingNames))].join(', ');
+
+                row.innerHTML = `
+                    <td>${status}</td>
+                    <td><b>${config.name} ${day}</b></td>
+                    <td>${times.map(t => `<span class="time-tag">${t}</span>`).join('')}</td>
+                    <td style="color:#64748b">${missing}</td>
+                `;
+                row.onclick = () => showBookings(config.name, day, bookings);
+                row.style.cursor = 'pointer';
+                tbody.appendChild(row);
+            }
+        }
+
+        if (!foundAny) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#94a3b8;">No common availability found for this filter/month.</td></tr>';
         }
     }
 
-    function showBookings(monthName, day, bookings) {
-        document.getElementById('modalTitle').textContent = `${monthName} ${day}, 2026`;
-        const { perfect, partial } = analyzeDayAvailability(bookings);
-        const dupMap = getDuplicateMap(allData);
-        let html = '';
+    async function refreshData() {
+        allData = await DB.getAll();
+        updateUI();
+    }
 
-        // 1. Availability Reports
-        if (perfect.length > 0) {
-            html += `<div style="background:#ecfdf5; border:1px solid #10b981; padding:10px; border-radius:12px; margin-bottom:15px;">
-                        <div style="color:#065f46; font-weight:800; font-size:0.7rem; text-transform:uppercase;">✨ Perfect Match</div>
-                        <div style="margin-top:5px;">${perfect.map(s => `<span class="time-tag" style="background:#10b981">${s}</span>`).join('')}</div>
-                     </div>`;
-        }
-        if (partial.length > 0 && perfect.length === 0) {
-            html += `<div style="background:#fffbeb; border:1px solid #fbbf24; padding:10px; border-radius:12px; margin-bottom:15px;">
-                        <div style="color:#92400e; font-weight:800; font-size:0.7rem; text-transform:uppercase;">⚠️ Best Options (Partial)</div>`;
-            partial.forEach(p => {
-                html += `<div style="margin-top:8px; font-size:0.75rem;"><span class="time-tag" style="background:#f59e0b">${p.slot}</span>
-                         <div style="color:#b45309; margin-top:3px;">Missing: <b>${p.missing.join(', ')}</b></div></div>`;
-            });
-            html += `</div>`;
-        }
-
-        // 2. Booking Cards
-        bookings.forEach(b => {
-            const cat = b.category || 'junior';
-            const isDup = dupMap[b.child_name.trim().toLowerCase()] > 1;
-            const dateStr = b.created_at ? new Date(b.created_at).toLocaleDateString() : 'Unknown Date';
-
-            html += `
-                <div class="booking-card ${cat} ${isDup ? 'is-duplicate' : ''}">
-                    <div style="flex:1">
-                        <div style="font-size:0.6rem; text-transform:uppercase; font-weight:800; color:#666">
-                            ${cat} ${isDup ? '<span style="color:#ef4444">⚠️ DUPLICATE</span>' : ''}
-                        </div>
-                        <div style="font-weight:700">${b.parent_name}</div>
-                        <div style="font-size:0.8rem;">Student: ${b.child_name}</div>
-                        <div style="font-size:0.6rem; color:#999; margin-bottom:5px;">Submitted: ${dateStr}</div>
-                        <div>${b.slots.map(s => `<span class="time-tag">${s}</span>`).join('')}</div>
-                    </div>
-                    <button class="btn-delete" onclick="deleteEntry(${b.id})">🗑️</button>
-                </div>`;
+    function updateUI() {
+        const filtered = allData.filter(p => {
+            const matchesCat = activeFilter === 'both' || (p.category || 'junior') === activeFilter;
+            const matchesSearch = p.child_name.toLowerCase().includes(searchQuery.toLowerCase());
+            return matchesCat && matchesSearch;
         });
+
+        // Update Stats
+        document.getElementById('stat-total').textContent = allData.length;
+        document.getElementById('stat-minor').textContent = allData.filter(p => p.category === 'minor').length;
+        document.getElementById('stat-junior').textContent = allData.filter(p => (p.category || 'junior') === 'junior').length;
+        document.getElementById('stat-senior').textContent = allData.filter(p => p.category === 'senior').length;
+
+        updateSummaryTable(currentMonthKey, filtered);
+        Object.keys(months).forEach(m => generateCalendar(m, filtered));
+    }
+
+    function generateCalendar(monthKey, data) {
+        const config = months[monthKey];
+        const grid = document.getElementById(`${monthKey}-grid`);
+        grid.innerHTML = '';
+        dayNames.forEach(d => { const h = document.createElement('div'); h.className='day-header'; h.textContent=d; grid.appendChild(h); });
+        for (let i=0; i<config.startDay; i++) grid.appendChild(Object.assign(document.createElement('div'), {className:'calendar-day empty'}));
         
+        for (let day=1; day<=config.days; day++) {
+            const bookings = [];
+            data.forEach(p => { if (p.selections?.[monthKey]?.[day]) bookings.push({...p, slots: p.selections[monthKey][day].filter(s => s !== "N/A")}); });
+            const { perfect, partial } = analyzeDayAvailability(bookings.filter(b => b.slots.length > 0));
+            
+            const d = document.createElement('div');
+            d.className = `calendar-day ${bookings.some(b => b.slots.length > 0) ? 'has-bookings' : ''}`;
+            if (perfect.length > 0) d.style.border = "2px solid #10b981";
+            else if (partial.length > 0) d.style.border = "2px dashed #fbbf24";
+
+            d.innerHTML = `<div class="day-num">${day}</div>`;
+            if (bookings.length > 0) d.onclick = () => showBookings(config.name, day, bookings.filter(b => b.slots.length > 0));
+            grid.appendChild(d);
+        }
+    }
+
+    function showBookings(m, d, b) {
+        document.getElementById('modalTitle').textContent = `${m} ${d}`;
+        let html = '';
+        b.forEach(item => {
+            html += `<div class="booking-card">
+                <div><b>${item.child_name}</b><br>${item.slots.map(s => `<span class="time-tag">${s}</span>`).join('')}</div>
+                <button class="btn-delete" onclick="deleteEntry(${item.id})">🗑️</button>
+            </div>`;
+        });
         document.getElementById('modalBody').innerHTML = html;
         document.getElementById('bookingModal').classList.add('show');
     }
 
-    async function deleteEntry(id) {
-        if (!confirm("Remove this specific submission?")) return;
-        await DB.delete(id);
-        closeModal();
-        refreshData();
-    }
-
+    function setFilter(c) { activeFilter = c; updateUI(); document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(c))); }
+    function switchMonth(m, e) { currentMonthKey = m; document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active')); e.target.classList.add('active'); updateUI(); }
+    function handleSearch() { searchQuery = document.getElementById('adminSearch').value; updateUI(); }
     function closeModal() { document.getElementById('bookingModal').classList.remove('show'); }
-    function switchMonth(m, e) {
-        document.querySelectorAll('.calendar-container, .month-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(m).classList.add('active'); e.target.classList.add('active');
-    }
+    async function deleteEntry(id) { if(confirm("Delete?")) { await DB.delete(id); refreshData(); closeModal(); } }
 
-    function exportToCSV() {
-        const data = getFilteredData();
-        let csv = 'Parent,Child,Category,Month,Day,Times\n';
-        data.forEach(p => {
-            Object.keys(p.selections || {}).forEach(m => {
-                Object.keys(p.selections[m]).forEach(d => {
-                    csv += `"${p.parent_name}","${p.child_name}","${p.category || 'junior'}","${m}","${d}","${p.selections[m][d].join('|')}"\n`;
-                });
-            });
-        });
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = `dance-schedule.csv`; a.click();
-    }
-
-    window.addEventListener('load', refreshData);
+    window.onload = refreshData;
 </script>
-
 </body>
 </html>
