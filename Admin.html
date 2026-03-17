@@ -3,127 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rhythms Admin Pro</title>
+    <title>Rhythms Admin - All-In-One Dashboard</title>
     <style>
-        /* --- CORE THEME --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.5; }
         
-        /* --- NAV BAR --- */
-        .nav-header { 
-            background: #4338ca; color: white; padding: 1rem; 
-            position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-        .nav-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        
-        .view-switcher { display: flex; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 4px; gap: 4px; }
-        .view-btn { 
-            padding: 8px 16px; border: none; background: transparent; color: white; 
-            border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.2s;
-        }
-        .view-btn.active { background: white; color: #4338ca; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-
-        .team-bar { background: white; padding: 10px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: center; gap: 10px; }
-        .team-btn { padding: 6px 15px; border: 1px solid #e2e8f0; background: white; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
-        .team-btn.active { background: #4338ca; color: white; border-color: #4338ca; }
-
-        /* --- CONTENT WRAPPERS --- */
+        .header { background: #4338ca; color: white; padding: 1rem; position: sticky; top: 0; z-index: 100; }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
-        .view-section { display: none; animation: fadeIn 0.3s ease; }
-        .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- TABLES & CARDS --- */
-        .card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; padding: 12px; font-size: 0.75rem; text-transform: uppercase; color: #64748b; border-bottom: 2px solid #f1f5f9; }
-        td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
         
-        /* Status Badges */
-        .badge { padding: 4px 10px; border-radius: 20px; font-weight: 700; font-size: 0.7rem; }
-        .badge-green { background: #dcfce7; color: #166534; }
-        .badge-red { background: #fee2e2; color: #991b1b; }
-        .badge-gray { background: #f1f5f9; color: #475569; }
+        /* Filters */
+        .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .btn { padding: 8px 16px; border: 1px solid #e2e8f0; background: white; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+        .btn.active { background: #4338ca; color: white; border-color: #4338ca; }
+        .refresh-btn { background: #10b981; color: white; border: none; margin-left: auto; }
 
-        /* Calendar Styles */
+        /* Sections */
+        .section-title { font-size: 1.25rem; font-weight: 700; margin: 30px 0 15px 0; display: flex; align-items: center; gap: 10px; }
+        .card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; overflow-x: auto; }
+
+        /* Spreadsheet Table */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; font-size: 0.75rem; text-transform: uppercase; color: #64748b; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
+        .time-tag { background: #e0e7ff; color: #4338ca; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; margin-right: 4px; }
+        .missing-tag { color: #ef4444; font-weight: 500; }
+
+        /* Nudge List */
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+        .dancer-item { padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.8rem; display: flex; justify-content: space-between; }
+        .is-done { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+        .is-missing { background: #fff1f2; border-color: #fecaca; color: #991b1b; }
+
+        /* Calendar */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-        .day-box { background: white; min-height: 100px; border-radius: 12px; padding: 8px; border: 1px solid #e2e8f0; }
-        .day-num { font-weight: 800; color: #64748b; margin-bottom: 5px; }
-        .has-data { border-left: 4px solid #4338ca; background: #f8fafc; }
+        .day { background: white; min-height: 90px; border-radius: 8px; border: 1px solid #e2e8f0; padding: 8px; cursor: pointer; transition: 0.2s; }
+        .day:hover { border-color: #4338ca; }
+        .day-header { font-weight: 800; font-size: 0.7rem; color: #94a3b8; text-align: center; padding-bottom: 5px; }
+        .day.has-data { border-left: 4px solid #4338ca; background: #eef2ff; }
+        .day-num { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
 
-        /* Roster List Styles */
-        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-        .dancer-card { padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
-        .dancer-card.submitted { border-left: 5px solid #10b981; background: #f0fdf4; }
-        .dancer-card.missing { border-left: 5px solid #ef4444; background: #fff1f2; }
-
-        .time-pill { background: #6366f1; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin: 2px; display: inline-block; }
+        /* Modal */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 16px; padding: 20px; max-height: 80vh; overflow-y: auto; }
+        
+        @media print { .header, .controls, .refresh-btn { display: none !important; } }
     </style>
 </head>
 <body>
 
-    <nav class="nav-header">
-        <div class="nav-content">
-            <h2 style="font-size: 1.1rem;">Rhythms Admin</h2>
-            <div class="view-switcher">
-                <button class="view-btn active" onclick="showView('common')">📅 Best Dates</button>
-                <button class="view-btn" onclick="showView('calendar')">🗓️ Full Calendar</button>
-                <button class="view-btn" onclick="showView('roster')">👥 Who Submitted?</button>
-            </div>
-            <button class="btn" style="background:white; color:#4338ca; padding:8px 15px; border-radius:8px; border:none; font-weight:700; cursor:pointer;" onclick="refreshData()">↺ Refresh</button>
+    <header class="header">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+            <h2>Rhythms Dance Studio Admin</h2>
+            <button class="btn refresh-btn" onclick="refreshData()">Update Data ↺</button>
         </div>
-    </nav>
-
-    <div class="team-bar">
-        <button class="team-btn" id="btn-minor" onclick="setTeam('minor')">Minors</button>
-        <button class="team-btn" id="btn-junior" onclick="setTeam('junior')">Juniors</button>
-        <button class="team-btn active" id="btn-senior" onclick="setTeam('senior')">Seniors</button>
-        <button class="team-btn" id="btn-both" onclick="setTeam('both')">All Teams</button>
-    </div>
+    </header>
 
     <div class="container">
         
-        <section id="view-common" class="view-section active">
-            <div class="card">
-                <h3>Best Rehearsal Opportunities</h3>
-                <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 15px;">Showing dates with the highest availability for the selected team.</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Common Times</th>
-                            <th>Missing From Team</th>
-                        </tr>
-                    </thead>
-                    <tbody id="common-table-body"></tbody>
-                </table>
-            </div>
-        </section>
+        <div class="controls">
+            <strong>Team:</strong>
+            <button class="btn active" id="btn-senior" onclick="setTeam('senior')">Seniors (11)</button>
+            <button class="btn" id="btn-junior" onclick="setTeam('junior')">Juniors (18)</button>
+            <button class="btn" id="btn-minor" onclick="setTeam('minor')">Minors (12)</button>
+            <span style="margin-left: 15px;"><strong>Month:</strong></span>
+            <select id="monthSelect" class="btn" onchange="setMonth(this.value)">
+                <option value="may">May</option>
+                <option value="june">June</option>
+                <option value="july">July</option>
+                <option value="august">August</option>
+            </select>
+        </div>
 
-        <section id="view-calendar" class="view-section">
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h3 id="cal-month-title">Calendar View</h3>
-                    <select id="month-picker" onchange="changeMonth(this.value)" style="padding: 5px; border-radius: 5px;">
-                        <option value="may">May</option>
-                        <option value="june">June</option>
-                        <option value="july">July</option>
-                        <option value="august">August</option>
-                    </select>
-                </div>
-                <div class="calendar-grid" id="calendar-render-area"></div>
-            </div>
-        </section>
+        <h3 class="section-title">📊 Common Availability (The Spreadsheet)</h3>
+        <div class="card">
+            <table id="commonTable">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Available Times</th>
+                        <th>Missing Dancers</th>
+                    </tr>
+                </thead>
+                <tbody id="commonBody"></tbody>
+            </table>
+        </div>
 
-        <section id="view-roster" class="view-section">
-            <div class="card">
-                <h3>Form Submission Tracker</h3>
-                <p id="roster-stat-text" style="margin-bottom: 20px; font-weight: 600;"></p>
-                <div class="roster-grid" id="roster-list-area"></div>
-            </div>
-        </section>
+        <h3 class="section-title">📝 Form Tracking (Nudge List)</h3>
+        <div class="card">
+            <div id="rosterSummary" style="margin-bottom: 15px; font-weight: 700;"></div>
+            <div class="roster-grid" id="rosterGrid"></div>
+        </div>
 
+        <h3 class="section-title">🗓️ Monthly Calendar</h3>
+        <div class="card">
+            <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+
+    </div>
+
+    <div id="modal" class="modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3 id="modalTitle" style="margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;"></h3>
+            <div id="modalBody"></div>
+            <button class="btn" style="width: 100%; margin-top: 20px;" onclick="closeModal()">Close</button>
+        </div>
     </div>
 
 <script src="supabase-config.js"></script>
@@ -134,7 +119,7 @@
         minor: ["Shriya Natarajan", "Shyla Natarajan", "Ivania Bhatia", "Alenka Gupta", "Saachi Gupta", "Naysha Kanvinde", "Pravina Nair", "Dhwani Nikhil", "Anagha Rao", "Amaya Mary Robert", "Shivani Sreejith", "Keerthi Srinivasan"]
     };
 
-    const MONTH_CONFIG = {
+    const MONTHS = {
         may: { name: 'May', days: 31, start: 4 },
         june: { name: 'June', days: 30, start: 0 },
         july: { name: 'July', days: 31, start: 3 },
@@ -145,116 +130,120 @@
     let currentTeam = 'senior';
     let currentMonth = 'may';
 
-    function showView(viewId) {
-        document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('view-' + viewId).classList.add('active');
-        event.currentTarget.classList.add('active');
-        updateUI();
-    }
-
-    function setTeam(team) {
-        currentTeam = team;
-        document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('btn-' + team).classList.add('active');
-        updateUI();
-    }
-
-    function changeMonth(val) {
-        currentMonth = val;
-        updateUI();
-    }
-
     async function refreshData() {
         allData = await DB.getAll();
         updateUI();
     }
 
-    function updateUI() {
-        const roster = currentTeam === 'both' ? [...ROSTERS.minor, ...ROSTERS.junior, ...ROSTERS.senior] : ROSTERS[currentTeam];
-        const filteredData = allData.filter(d => currentTeam === 'both' || (d.category || 'junior') === currentTeam);
-        
-        renderCommonDates(filteredData, roster);
-        renderCalendar(filteredData, roster);
-        renderRosterTracker(allData, roster);
+    function setTeam(team) {
+        currentTeam = team;
+        document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-' + team).classList.add('active');
+        updateUI();
     }
 
-    function renderCommonDates(data, roster) {
-        const tbody = document.getElementById('common-table-body');
-        tbody.innerHTML = '';
-        const month = MONTH_CONFIG[currentMonth];
+    function setMonth(m) {
+        currentMonth = m;
+        updateUI();
+    }
+
+    function updateUI() {
+        const roster = ROSTERS[currentTeam];
+        const monthInfo = MONTHS[currentMonth];
+        const teamData = allData.filter(d => (d.category || 'junior').toLowerCase() === currentTeam.toLowerCase());
+
+        renderNudgeList(teamData, roster);
+        renderCommonTable(teamData, roster, monthInfo);
+        renderCalendar(teamData, monthInfo);
+    }
+
+    function renderNudgeList(data, roster) {
+        const grid = document.getElementById('rosterGrid');
+        const summary = document.getElementById('rosterSummary');
+        grid.innerHTML = '';
+        
+        const submittedNames = data.map(d => d.child_name.trim().toLowerCase());
+        let count = 0;
+
+        roster.forEach(name => {
+            const hasSubmitted = submittedNames.includes(name.toLowerCase());
+            if(hasSubmitted) count++;
+            grid.innerHTML += `
+                <div class="dancer-item ${hasSubmitted ? 'is-done' : 'is-missing'}">
+                    ${name} <span>${hasSubmitted ? '✅' : '❌'}</span>
+                </div>
+            `;
+        });
+        summary.innerHTML = `Team Progress: ${count} / ${roster.length} Forms Submitted`;
+    }
+
+    function renderCommonTable(data, roster, month) {
+        const body = document.getElementById('commonBody');
+        body.innerHTML = '';
 
         for (let d = 1; d <= month.days; d++) {
-            const bookings = data.filter(item => item.selections?.[currentMonth]?.[d]);
-            if (bookings.length === 0) continue;
+            const dayBookings = data.filter(item => item.selections?.[currentMonth]?.[d]);
+            if (dayBookings.length === 0) continue;
 
-            const slots = [...new Set(bookings.flatMap(b => b.selections[currentMonth][d]))].filter(s => s !== "N/A");
-            
-            slots.forEach(slot => {
-                const available = bookings.filter(b => b.selections[currentMonth][d].includes(slot)).map(b => b.child_name.trim().toLowerCase());
-                const missing = roster.filter(name => !available.includes(name.toLowerCase()));
+            const daySlots = [...new Set(dayBookings.flatMap(b => b.selections[currentMonth][d]))].filter(s => s !== "N/A");
+
+            daySlots.forEach(slot => {
+                const available = dayBookings.filter(b => b.selections[currentMonth][d].includes(slot)).map(b => b.child_name.trim().toLowerCase());
+                const missing = roster.filter(n => !available.includes(n.toLowerCase()));
 
                 if (missing.length <= 3) {
                     const row = document.createElement('tr');
-                    const isFull = missing.length === 0;
                     row.innerHTML = `
-                        <td><span class="badge ${isFull ? 'badge-green' : 'badge-gray'}">${isFull ? 'PERFECT' : 'MISSING ' + missing.length}</span></td>
-                        <td><b>${month.name} ${d}</b></td>
-                        <td><span class="time-pill">${slot}</span></td>
-                        <td style="color:${isFull ? '#10b981' : '#ef4444'}">${isFull ? 'Full Team Available' : missing.join(', ')}</td>
+                        <td><b style="color:${missing.length === 0 ? '#10b981' : '#f59e0b'}">${missing.length === 0 ? '✓ FULL TEAM' : 'MAJORITY'}</b></td>
+                        <td>${month.name} ${d}</td>
+                        <td><span class="time-tag">${slot}</span></td>
+                        <td class="missing-tag">${missing.length === 0 ? '—' : missing.join(', ')}</td>
                     `;
-                    tbody.appendChild(row);
+                    body.appendChild(row);
                 }
             });
         }
     }
 
-    function renderCalendar(data, roster) {
-        const grid = document.getElementById('calendar-render-area');
+    function renderCalendar(data, month) {
+        const grid = document.getElementById('calendarGrid');
         grid.innerHTML = '';
-        const month = MONTH_CONFIG[currentMonth];
-
-        // Headers
-        ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(day => {
-            grid.innerHTML += `<div style="text-align:center; font-weight:800; font-size:0.7rem; color:#64748b; padding:5px;">${day}</div>`;
-        });
+        ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(h => grid.innerHTML += `<div class="day-header">${h}</div>`);
 
         for (let i=0; i<month.start; i++) grid.innerHTML += `<div></div>`;
 
         for (let d=1; d<=month.days; d++) {
-            const bookings = data.filter(item => item.selections?.[currentMonth]?.[d]);
-            const hasData = bookings.length > 0;
-            grid.innerHTML += `
-                <div class="day-box ${hasData ? 'has-data' : ''}">
-                    <div class="day-num">${d}</div>
-                    ${hasData ? `<div style="font-size:0.65rem; font-weight:700;">${bookings.length} Dancers</div>` : ''}
-                </div>
-            `;
+            const dayBookings = data.filter(item => item.selections?.[currentMonth]?.[d]);
+            const dayDiv = document.createElement('div');
+            dayDiv.className = `day ${dayBookings.length > 0 ? 'has-data' : ''}`;
+            dayDiv.innerHTML = `<div class="day-num">${d}</div><div style="font-size:0.7rem">${dayBookings.length > 0 ? dayBookings.length + ' Dancers' : ''}</div>`;
+            dayDiv.onclick = () => showDayDetails(month.name, d, dayBookings);
+            grid.appendChild(dayDiv);
         }
     }
 
-    function renderRosterTracker(data, roster) {
-        const area = document.getElementById('roster-list-area');
-        area.innerHTML = '';
-        const submittedNames = data.map(d => d.child_name.trim().toLowerCase());
-        let count = 0;
+    function showDayDetails(mName, day, bookings) {
+        const modal = document.getElementById('modal');
+        const title = document.getElementById('modalTitle');
+        const body = document.getElementById('modalBody');
 
-        roster.forEach(name => {
-            const didSubmit = submittedNames.includes(name.toLowerCase());
-            if (didSubmit) count++;
-            area.innerHTML += `
-                <div class="dancer-card ${didSubmit ? 'submitted' : 'missing'}">
-                    <span style="font-weight:600; font-size:0.85rem;">${name}</span>
-                    <span style="font-size:1.2rem;">${didSubmit ? '✅' : '❌'}</span>
+        title.innerText = `${mName} ${day} - Dancer Availability`;
+        body.innerHTML = bookings.length === 0 ? 'No dancers available this day.' : '';
+
+        bookings.forEach(b => {
+            const slots = b.selections[currentMonth][day].filter(s => s !== "N/A");
+            body.innerHTML += `
+                <div style="padding: 10px; border-bottom: 1px solid #eee;">
+                    <strong>${b.child_name}</strong> <br>
+                    ${slots.map(s => `<span class="time-tag">${s}</span>`).join('')}
                 </div>
             `;
         });
 
-        document.getElementById('roster-stat-text').innerHTML = `
-            <span style="color:#10b981">${count} Submitted</span> / 
-            <span style="color:#ef4444">${roster.length - count} Still Missing</span>
-        `;
+        modal.classList.add('active');
     }
+
+    function closeModal() { document.getElementById('modal').classList.remove('active'); }
 
     window.onload = refreshData;
 </script>
